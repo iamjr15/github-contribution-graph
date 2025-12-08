@@ -11,14 +11,14 @@ Embed GitHub contribution graphs on any website.
 
 ## Demo
 
-**Live:** https://inspiring-gaufre-e45638.netlify.app
+**Live:** https://github-contribution-graph.netlify.app
 
 ## Quick Start
 
 ```html
-<link rel="stylesheet" href="https://inspiring-gaufre-e45638.netlify.app/assets/css/gh.css">
+<link rel="stylesheet" href="https://github-contribution-graph.netlify.app/assets/css/gh.css">
 <div id="gh" data-login="YOUR_GITHUB_USERNAME"></div>
-<script src="https://inspiring-gaufre-e45638.netlify.app/assets/js/gh.js"></script>
+<script src="https://github-contribution-graph.netlify.app/assets/js/gh.js"></script>
 ```
 
 ## Self-Hosting

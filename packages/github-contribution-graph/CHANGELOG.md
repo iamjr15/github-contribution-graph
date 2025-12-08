@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
-## [1.0.0] - 2024-12-09
+## [3.0.1] - 2024-12-09
+
+### Fixed
+
+- Updated changelog documentation
+
+## [3.0.0] - 2024-12-09
 
 ### Added
 

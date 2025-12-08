@@ -1,6 +1,6 @@
 {
-  "name": "github-contribution-graph",
-  "version": "1.0.0",
+  "name": "github-contrib-graph",
+  "version": "3.0.1",
   "description": "Lightweight, customizable GitHub contribution graph widget for any website",
   "keywords": [
     "github",
@@ -15,7 +15,7 @@
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/iamjr15/github-contribution-graph.git",
+    "url": "git+https://github.com/iamjr15/github-contribution-graph.git",
     "directory": "packages/github-contribution-graph"
   },
   "homepage": "https://github-contribution-graph.netlify.app",

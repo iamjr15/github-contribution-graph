@@ -2,14 +2,16 @@
 
 A lightweight, customizable widget to embed your GitHub contribution graph on any website.
 
-[![npm version](https://img.shields.io/npm/v/github-contribution-graph.svg)](https://npmjs.com/package/github-contribution-graph)
-[![Live Demo](https://img.shields.io/badge/demo-live-brightgreen)](https://github-contribution-graph.netlify.app)
-[![Netlify Status](https://api.netlify.com/api/v1/badges/478cfe35-5d4d-4ec2-939b-b58e4de45ebe/deploy-status)](https://app.netlify.com/sites/github-contribution-graph/deploys)
+[![npm version](https://img.shields.io/npm/v/github-contrib-graph.svg)](https://npmjs.com/package/github-contrib-graph)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue)](LICENSE)
 
 ![Preview](assets/media/thumbnail.png)
 
-**[Live Demo](https://github-contribution-graph.netlify.app)** | **[GitHub Repo](https://github.com/iamjr15/github-contribution-graph)** | **[npm Package](https://npmjs.com/package/github-contribution-graph)**
+<p align="center">
+  <a href="https://github-contribution-graph.netlify.app"><strong>Live Demo</strong></a> ·
+  <a href="https://github.com/iamjr15/github-contribution-graph"><strong>GitHub Repo</strong></a> ·
+  <a href="https://npmjs.com/package/github-contrib-graph"><strong>npm Package</strong></a>
+</p>
 
 ---
 
@@ -18,14 +20,14 @@ A lightweight, customizable widget to embed your GitHub contribution graph on an
 Install via npm for React or vanilla JavaScript projects:
 
 ```bash
-npm install github-contribution-graph
+npm install github-contrib-graph
 ```
 
 ### React
 
 ```tsx
-import { GitHubContributionGraph } from 'github-contribution-graph/react';
-import 'github-contribution-graph/styles.css';
+import { GitHubContributionGraph } from 'github-contrib-graph/react';
+import 'github-contrib-graph/styles.css';
 
 function App() {
   return <GitHubContributionGraph username="octocat" theme="midnight" />;
@@ -35,8 +37,8 @@ function App() {
 ### Vanilla JavaScript
 
 ```js
-import { GitHubContributionWidget } from 'github-contribution-graph/vanilla';
-import 'github-contribution-graph/styles.css';
+import { GitHubContributionWidget } from 'github-contrib-graph/vanilla';
+import 'github-contrib-graph/styles.css';
 
 const widget = new GitHubContributionWidget({
   username: 'octocat',

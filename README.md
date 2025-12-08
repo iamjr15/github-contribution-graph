@@ -3,6 +3,9 @@
 A lightweight, customizable widget to embed your GitHub contribution graph on any website.
 
 [![npm version](https://img.shields.io/npm/v/github-contrib-graph.svg)](https://npmjs.com/package/github-contrib-graph)
+[![npm downloads](https://img.shields.io/npm/dm/github-contrib-graph.svg)](https://npmjs.com/package/github-contrib-graph)
+[![CI](https://github.com/iamjr15/github-contribution-graph/actions/workflows/ci.yml/badge.svg)](https://github.com/iamjr15/github-contribution-graph/actions/workflows/ci.yml)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.7-blue.svg)](https://www.typescriptlang.org/)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue)](LICENSE)
 
 <p align="center">

@@ -1,5 +1,5 @@
 {
-  "name": "gh-contrib-graph",
+  "name": "github-contribution-graph",
   "version": "1.0.0",
   "description": "GitHub Contribution Graph Widget",
   "scripts": {

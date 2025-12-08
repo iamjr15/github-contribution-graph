@@ -163,28 +163,28 @@ The widget modifies the DOM directly, so you must use `useEffect` to initialize 
 ```jsx
 import { useEffect } from 'react';
 
-// 1. Import the CSS (or copy the contents to your CSS file)
-// import './gh.css'; 
-
 const ContributionGraph = ({ username }) => {
   useEffect(() => {
-    // 2. Load the script dynamically
+    // Add CSS
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = 'https://github-contribution-graph.netlify.app/assets/css/gh.css';
+    document.head.appendChild(link);
+
+    // Add Script
     const script = document.createElement('script');
-    script.src = "https://github-contribution-graph.netlify.app/assets/js/gh.js";
+    script.src = 'https://github-contribution-graph.netlify.app/assets/js/gh.js';
     script.async = true;
     document.body.appendChild(script);
 
     return () => {
+      // Cleanup on unmount
+      document.head.removeChild(link);
       document.body.removeChild(script);
-    }
+    };
   }, []);
 
-  return (
-    <div className="main-container">
-        {/* Your wrapper elements... */}
-        <div id="gh" data-login={username}></div>
-    </div>
-  );
+  return <div id="gh" data-login={username}></div>;
 };
 
 export default ContributionGraph;
@@ -194,23 +194,35 @@ export default ContributionGraph;
 
 ```vue
 <template>
-  <div class="main-container">
-    <div id="gh" :data-login="username"></div>
-  </div>
+  <div id="gh" :data-login="username"></div>
 </template>
 
 <script setup>
-import { onMounted } from 'vue';
+import { onMounted, onUnmounted } from 'vue';
 
 const props = defineProps({
   username: String
 });
 
+let link, script;
+
 onMounted(() => {
-  const script = document.createElement('script');
-  script.src = "https://github-contribution-graph.netlify.app/assets/js/gh.js";
+  // Add CSS
+  link = document.createElement('link');
+  link.rel = 'stylesheet';
+  link.href = 'https://github-contribution-graph.netlify.app/assets/css/gh.css';
+  document.head.appendChild(link);
+
+  // Add Script
+  script = document.createElement('script');
+  script.src = 'https://github-contribution-graph.netlify.app/assets/js/gh.js';
   script.async = true;
   document.body.appendChild(script);
+});
+
+onUnmounted(() => {
+  if (link) document.head.removeChild(link);
+  if (script) document.body.removeChild(script);
 });
 </script>
 ```

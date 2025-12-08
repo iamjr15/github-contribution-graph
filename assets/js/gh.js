@@ -1,6 +1,9 @@
+// API base URL - uses absolute URL for external embedding support
+const API_BASE = 'https://github-contribution-graph.netlify.app';
+
 async function fetchData(ghLogin) {
     try {
-        const response = await fetch(`/api/ghcg/fetch-data?login=${ghLogin}`);
+        const response = await fetch(`${API_BASE}/api/ghcg/fetch-data?login=${ghLogin}`);
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }

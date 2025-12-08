@@ -1,0 +1,12 @@
+{
+  "name": "gh-contrib-graph",
+  "version": "1.0.0",
+  "description": "GitHub Contribution Graph Widget",
+  "scripts": {
+    "dev": "netlify dev"
+  },
+  "dependencies": {
+    "@octokit/graphql": "^7.0.2"
+  },
+  "license": "Apache-2.0"
+}

@@ -5,8 +5,6 @@ A lightweight, customizable widget to embed your GitHub contribution graph on an
 [![npm version](https://img.shields.io/npm/v/github-contrib-graph.svg)](https://npmjs.com/package/github-contrib-graph)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue)](LICENSE)
 
-![Preview](assets/media/thumbnail.png)
-
 <p align="center">
   <a href="https://github-contribution-graph.netlify.app"><strong>Live Demo</strong></a> ·
   <a href="https://github.com/iamjr15/github-contribution-graph"><strong>GitHub Repo</strong></a> ·

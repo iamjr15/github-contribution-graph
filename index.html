@@ -2,6 +2,7 @@
 <html>
     <head>
         <title>GitHub Contribution Graph</title>
+        <link rel="icon" type="image/svg+xml" href="./assets/media/favicon.svg">
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -32,6 +33,10 @@
 
             <div id="gh" data-login="iamjr15"></div>
 
+            <div class="meta-info">
+                <div class="meta-item"><div class="status-dot"></div> SYSTEM ONLINE</div>
+            </div>
+
             <div class="docs-section">
                 <h2>// INTEGRATION</h2>
 
@@ -40,8 +45,8 @@
                         HTML
                         <button class="copy-btn" data-target="snippet-html">COPY</button>
                     </div>
-                    <pre><code id="snippet-html"><span class="code-tag">&lt;!-- Styles --&gt;</span>
-<span class="code-tag">&lt;link</span> <span class="code-attr">rel</span>=<span class="code-string">"stylesheet"</span> <span class="code-attr">href</span>=<span class="code-string">"gh.css"</span><span class="code-tag">&gt;</span>
+                    <pre><code id="snippet-html"><span class="code-tag">&lt;!-- 1. Include the styles --&gt;</span>
+<span class="code-tag">&lt;link</span> <span class="code-attr">rel</span>=<span class="code-string">"stylesheet"</span> <span class="code-attr">href</span>=<span class="code-string">"https://github-contribution-graph.netlify.app/assets/css/gh.css"</span><span class="code-tag">&gt;</span>
 <span class="code-tag">&lt;style&gt;</span>
   :root {
     <span id="css-vars-snippet">/* Void Theme */
@@ -52,11 +57,11 @@
   }
 <span class="code-tag">&lt;/style&gt;</span>
 
-<span class="code-tag">&lt;!-- Widget --&gt;</span>
+<span class="code-tag">&lt;!-- 2. Create the container --&gt;</span>
 <span class="code-tag">&lt;div</span> <span class="code-attr">id</span>=<span class="code-string">"gh"</span> <span class="code-attr">data-login</span>=<span class="code-string">"<span class="dynamic-username">iamjr15</span>"</span><span class="code-tag">&gt;&lt;/div&gt;</span>
 
-<span class="code-tag">&lt;!-- Script --&gt;</span>
-<span class="code-tag">&lt;script</span> <span class="code-attr">src</span>=<span class="code-string">"gh.js"</span><span class="code-tag">&gt;&lt;/script&gt;</span></code></pre>
+<span class="code-tag">&lt;!-- 3. Include the script --&gt;</span>
+<span class="code-tag">&lt;script</span> <span class="code-attr">src</span>=<span class="code-string">"https://github-contribution-graph.netlify.app/assets/js/gh.js"</span><span class="code-tag">&gt;&lt;/script&gt;</span></code></pre>
                 </div>
 
                 <div class="code-block">
@@ -68,10 +73,20 @@
 
 <span class="code-keyword">const</span> ContributionGraph = () => {
   useEffect(() => {
+    <span class="code-keyword">const</span> link = document.createElement(<span class="code-string">'link'</span>);
+    link.rel = <span class="code-string">'stylesheet'</span>;
+    link.href = <span class="code-string">'https://github-contribution-graph.netlify.app/assets/css/gh.css'</span>;
+    document.head.appendChild(link);
+
     <span class="code-keyword">const</span> script = document.createElement(<span class="code-string">'script'</span>);
-    script.src = <span class="code-string">"gh.js"</span>;
+    script.src = <span class="code-string">'https://github-contribution-graph.netlify.app/assets/js/gh.js'</span>;
     script.async = <span class="code-keyword">true</span>;
     document.body.appendChild(script);
+
+    <span class="code-keyword">return</span> () => {
+      document.head.removeChild(link);
+      document.body.removeChild(script);
+    };
   }, []);
 
   <span class="code-keyword">return</span> (
@@ -88,6 +103,50 @@
     <span class="code-tag">&lt;/&gt;</span>
   );
 };</code></pre>
+                </div>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        VUE 3
+                        <button class="copy-btn" data-target="snippet-vue">COPY</button>
+                    </div>
+                    <pre><code id="snippet-vue"><span class="code-tag">&lt;template&gt;</span>
+  <span class="code-tag">&lt;div</span> <span class="code-attr">id</span>=<span class="code-string">"gh"</span> <span class="code-attr">:data-login</span>=<span class="code-string">"username"</span><span class="code-tag">&gt;&lt;/div&gt;</span>
+<span class="code-tag">&lt;/template&gt;</span>
+
+<span class="code-tag">&lt;script setup&gt;</span>
+<span class="code-keyword">import</span> { onMounted, onUnmounted } <span class="code-keyword">from</span> <span class="code-string">'vue'</span>;
+
+<span class="code-keyword">const</span> props = defineProps({ username: String });
+<span class="code-keyword">let</span> link, script;
+
+onMounted(() => {
+  link = document.createElement(<span class="code-string">'link'</span>);
+  link.rel = <span class="code-string">'stylesheet'</span>;
+  link.href = <span class="code-string">'https://github-contribution-graph.netlify.app/assets/css/gh.css'</span>;
+  document.head.appendChild(link);
+
+  script = document.createElement(<span class="code-string">'script'</span>);
+  script.src = <span class="code-string">'https://github-contribution-graph.netlify.app/assets/js/gh.js'</span>;
+  script.async = <span class="code-keyword">true</span>;
+  document.body.appendChild(script);
+});
+
+onUnmounted(() => {
+  <span class="code-keyword">if</span> (link) document.head.removeChild(link);
+  <span class="code-keyword">if</span> (script) document.body.removeChild(script);
+});
+<span class="code-tag">&lt;/script&gt;</span>
+
+<span class="code-tag">&lt;style&gt;</span>
+  :root {
+    <span id="vue-css-vars-snippet">/* Void Theme */
+    --gh-bg-color: #000000;
+    --gh-text-default-color: #ffffff;
+    --gh-cell-level0-color: #111111;
+    --gh-border-card-color: #333333;</span>
+  }
+<span class="code-tag">&lt;/style&gt;</span></code></pre>
                 </div>
             </div>
 
@@ -108,7 +167,6 @@
                 const cssVarsSnippet = document.getElementById('css-vars-snippet');
                 const reactCssVarsSnippet = document.getElementById('react-css-vars-snippet');
 
-                // Themes Config
                 const themes = {
                     void: {
                         css: `    /* Void Theme */
@@ -119,7 +177,12 @@
                         reactCss: `          --gh-bg-color: #000000;
           --gh-text-default-color: #ffffff;
           --gh-cell-level0-color: #111111;
-          --gh-border-card-color: #333333;`
+          --gh-border-card-color: #333333;`,
+                        vueCss: `    /* Void Theme */
+    --gh-bg-color: #000000;
+    --gh-text-default-color: #ffffff;
+    --gh-cell-level0-color: #111111;
+    --gh-border-card-color: #333333;`
                     },
                     slate: {
                         css: `    /* Slate Theme */
@@ -130,7 +193,12 @@
                         reactCss: `          --gh-bg-color: #141414;
           --gh-text-default-color: #eeeeee;
           --gh-cell-level0-color: #222222;
-          --gh-border-card-color: #333333;`
+          --gh-border-card-color: #333333;`,
+                        vueCss: `    /* Slate Theme */
+    --gh-bg-color: #141414;
+    --gh-text-default-color: #eeeeee;
+    --gh-cell-level0-color: #222222;
+    --gh-border-card-color: #333333;`
                     },
                     midnight: {
                         css: `    /* Midnight Theme */
@@ -141,7 +209,12 @@
                         reactCss: `          --gh-bg-color: #0f1016;
           --gh-text-default-color: #f1f5f9;
           --gh-cell-level0-color: #1e202e;
-          --gh-border-card-color: #2d2a45;`
+          --gh-border-card-color: #2d2a45;`,
+                        vueCss: `    /* Midnight Theme */
+    --gh-bg-color: #0f1016;
+    --gh-text-default-color: #f1f5f9;
+    --gh-cell-level0-color: #1e202e;
+    --gh-border-card-color: #2d2a45;`
                     },
                     glacier: {
                         css: `    /* Glacier Theme */
@@ -152,7 +225,12 @@
                         reactCss: `          --gh-bg-color: #ffffff;
           --gh-text-default-color: #334155;
           --gh-cell-level0-color: #f1f5f9;
-          --gh-border-card-color: #e2e8f0;`
+          --gh-border-card-color: #e2e8f0;`,
+                        vueCss: `    /* Glacier Theme */
+    --gh-bg-color: #ffffff;
+    --gh-text-default-color: #334155;
+    --gh-cell-level0-color: #f1f5f9;
+    --gh-border-card-color: #e2e8f0;`
                     },
                     cyber: {
                         css: `    /* Cyber Theme */
@@ -163,9 +241,17 @@
                         reactCss: `          --gh-bg-color: #000000;
           --gh-text-default-color: #00ff41;
           --gh-cell-level0-color: #001a00;
-          --gh-border-card-color: #003b00;`
+          --gh-border-card-color: #003b00;`,
+                        vueCss: `    /* Cyber Theme */
+    --gh-bg-color: #000000;
+    --gh-text-default-color: #00ff41;
+    --gh-cell-level0-color: #001a00;
+    --gh-border-card-color: #003b00;`
                     }
                 };
+                
+                // Get the new Vue snippet element
+                const vueCssVarsSnippet = document.getElementById('vue-css-vars-snippet');
 
                 function updateGraph() {
                     const username = input.value.trim();
@@ -193,6 +279,7 @@
                     if (themes[themeName]) {
                         cssVarsSnippet.textContent = themes[themeName].css;
                         reactCssVarsSnippet.textContent = themes[themeName].reactCss;
+                        if (vueCssVarsSnippet) vueCssVarsSnippet.textContent = themes[themeName].vueCss;
                     }
                 }
 

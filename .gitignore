@@ -4,3 +4,5 @@ node_modules
 .netlify
 .gemini-clipboard
 .DS_Store
+packages/*/dist
+coverage

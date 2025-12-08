@@ -2,15 +2,55 @@
 
 A lightweight, customizable widget to embed your GitHub contribution graph on any website.
 
+[![npm version](https://img.shields.io/npm/v/github-contribution-graph.svg)](https://npmjs.com/package/github-contribution-graph)
 [![Live Demo](https://img.shields.io/badge/demo-live-brightgreen)](https://github-contribution-graph.netlify.app)
 [![Netlify Status](https://api.netlify.com/api/v1/badges/478cfe35-5d4d-4ec2-939b-b58e4de45ebe/deploy-status)](https://app.netlify.com/sites/github-contribution-graph/deploys)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue)](LICENSE)
 
 ![Preview](assets/media/thumbnail.png)
 
-**[Live Demo](https://github-contribution-graph.netlify.app)** | **[GitHub Repo](https://github.com/iamjr15/github-contribution-graph)**
+**[Live Demo](https://github-contribution-graph.netlify.app)** | **[GitHub Repo](https://github.com/iamjr15/github-contribution-graph)** | **[npm Package](https://npmjs.com/package/github-contribution-graph)**
 
-## Quick Start (Standard)
+---
+
+## NPM Package
+
+Install via npm for React or vanilla JavaScript projects:
+
+```bash
+npm install github-contribution-graph
+```
+
+### React
+
+```tsx
+import { GitHubContributionGraph } from 'github-contribution-graph/react';
+import 'github-contribution-graph/styles.css';
+
+function App() {
+  return <GitHubContributionGraph username="octocat" theme="midnight" />;
+}
+```
+
+### Vanilla JavaScript
+
+```js
+import { GitHubContributionWidget } from 'github-contribution-graph/vanilla';
+import 'github-contribution-graph/styles.css';
+
+const widget = new GitHubContributionWidget({
+  username: 'octocat',
+  container: '#my-graph',
+  theme: 'void',
+});
+widget.render();
+```
+
+See the [package README](packages/github-contribution-graph/README.md) for full API documentation.
+
+---
+
+## Quick Start (CDN)
 
 Add the following to your HTML file to get the standard GitHub-styled graph:
 

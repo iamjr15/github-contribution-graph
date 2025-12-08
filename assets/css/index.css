@@ -434,7 +434,28 @@ h1::after {
     to { opacity: 1; filter: blur(0); }
 }
 
-/* Footer */
+/* Status Dot */
+.meta-info {
+    font-size: 0.7rem;
+    color: var(--text-dim);
+    display: flex;
+    gap: 2rem;
+    margin-top: 1rem;
+}
+
+.meta-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.status-dot {
+    width: 6px;
+    height: 6px;
+    background-color: #00ff00;
+    border-radius: 50%;
+    box-shadow: 0 0 10px #00ff00;
+}
 .site-footer {
     margin-top: 4rem;
     font-size: 0.7rem;

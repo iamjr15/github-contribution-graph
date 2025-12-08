@@ -1,12 +1,22 @@
 {
-  "name": "github-contribution-graph",
+  "name": "github-contribution-graph-monorepo",
   "version": "1.0.0",
-  "description": "GitHub Contribution Graph Widget",
+  "private": true,
+  "description": "GitHub Contribution Graph Widget - Monorepo",
+  "workspaces": [
+    "packages/*"
+  ],
   "scripts": {
-    "dev": "netlify dev"
+    "dev": "netlify dev",
+    "build": "npm run build -w packages/github-contribution-graph",
+    "test": "npm run test -w packages/github-contribution-graph",
+    "test:coverage": "npm run test:coverage -w packages/github-contribution-graph"
   },
   "dependencies": {
     "@octokit/graphql": "^7.0.2"
   },
-  "license": "Apache-2.0"
+  "license": "Apache-2.0",
+  "engines": {
+    "node": ">=18.0.0"
+  }
 }

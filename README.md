@@ -175,6 +175,12 @@ const ContributionGraph = ({ username }) => {
     const script = document.createElement('script');
     script.src = 'https://github-contribution-graph.netlify.app/assets/js/gh.js';
     script.async = true;
+    script.onload = () => {
+      // Render after script loads and DOM is ready
+      if (window.renderGitHubWidget) {
+        window.renderGitHubWidget();
+      }
+    };
     document.body.appendChild(script);
 
     return () => {
@@ -217,6 +223,12 @@ onMounted(() => {
   script = document.createElement('script');
   script.src = 'https://github-contribution-graph.netlify.app/assets/js/gh.js';
   script.async = true;
+  script.onload = () => {
+    // Render after script loads and DOM is ready
+    if (window.renderGitHubWidget) {
+      window.renderGitHubWidget();
+    }
+  };
   document.body.appendChild(script);
 });
 

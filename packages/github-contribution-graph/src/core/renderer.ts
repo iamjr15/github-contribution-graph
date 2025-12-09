@@ -167,10 +167,10 @@ export function createThumbnail(): HTMLDivElement {
   // GitHub logo SVG
   const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
   svg.setAttribute('viewBox', '0 0 98 96');
-  svg.setAttribute('width', '30');
-  svg.setAttribute('height', '30');
-  svg.style.marginTop = '15px';
-  svg.style.opacity = '0.6';
+  svg.setAttribute('width', '18');
+  svg.setAttribute('height', '18');
+  svg.style.marginTop = '10px';
+  svg.style.opacity = '0.5';
   svg.style.fill = 'var(--gh-text-default-color, #333)';
 
   const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');

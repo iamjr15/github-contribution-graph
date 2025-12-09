@@ -9,7 +9,7 @@ A lightweight, customizable widget to embed your GitHub contribution graph on an
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue)](LICENSE)
 
 <p align="center">
-  <a href="https://github-contribution-graph.netlify.app"><strong>Live Demo</strong></a> ·
+  <a href="https://githubgraph.jigyansurout.com"><strong>Live Demo</strong></a> ·
   <a href="https://github.com/iamjr15/github-contribution-graph"><strong>GitHub Repo</strong></a> ·
   <a href="https://npmjs.com/package/github-contrib-graph"><strong>npm Package</strong></a>
 </p>
@@ -59,13 +59,13 @@ Add the following to your HTML file to get the standard GitHub-styled graph:
 
 ```html
 <!-- 1. Include the styles -->
-<link rel="stylesheet" href="https://github-contribution-graph.netlify.app/assets/css/gh.css">
+<link rel="stylesheet" href="https://githubgraph.jigyansurout.com/assets/css/gh.css">
 
 <!-- 2. Create the container with your username -->
 <div id="gh" data-login="iamjr15"></div>
 
 <!-- 3. Include the script -->
-<script src="https://github-contribution-graph.netlify.app/assets/js/gh.js"></script>
+<script src="https://githubgraph.jigyansurout.com/assets/js/gh.js"></script>
 ```
 
 ---
@@ -211,12 +211,12 @@ const ContributionGraph = ({ username }) => {
     // Add CSS
     const link = document.createElement('link');
     link.rel = 'stylesheet';
-    link.href = 'https://github-contribution-graph.netlify.app/assets/css/gh.css';
+    link.href = 'https://githubgraph.jigyansurout.com/assets/css/gh.css';
     document.head.appendChild(link);
 
     // Add Script
     const script = document.createElement('script');
-    script.src = 'https://github-contribution-graph.netlify.app/assets/js/gh.js';
+    script.src = 'https://githubgraph.jigyansurout.com/assets/js/gh.js';
     script.async = true;
     script.onload = () => {
       // Render after script loads and DOM is ready
@@ -259,12 +259,12 @@ onMounted(() => {
   // Add CSS
   link = document.createElement('link');
   link.rel = 'stylesheet';
-  link.href = 'https://github-contribution-graph.netlify.app/assets/css/gh.css';
+  link.href = 'https://githubgraph.jigyansurout.com/assets/css/gh.css';
   document.head.appendChild(link);
 
   // Add Script
   script = document.createElement('script');
-  script.src = 'https://github-contribution-graph.netlify.app/assets/js/gh.js';
+  script.src = 'https://githubgraph.jigyansurout.com/assets/js/gh.js';
   script.async = true;
   script.onload = () => {
     // Render after script loads and DOM is ready
@@ -287,7 +287,7 @@ onUnmounted(() => {
 The widget uses a serverless API to fetch contribution data:
 
 ```
-GET https://github-contribution-graph.netlify.app/api/ghcg/fetch-data?login={username}
+GET https://githubgraph.jigyansurout.com/api/ghcg/fetch-data?login={username}
 ```
 
 **Response:**

@@ -3,7 +3,7 @@ import type { ContributionLevel, ThemeConfig, ThemePreset } from './types';
 /**
  * Default API endpoint for fetching contribution data
  */
-export const DEFAULT_API_ENDPOINT = 'https://github-contribution-graph.netlify.app/api/ghcg/fetch-data';
+export const DEFAULT_API_ENDPOINT = 'https://githubgraph.jigyansurout.com/api/ghcg/fetch-data';
 
 /**
  * Repository URL for the widget

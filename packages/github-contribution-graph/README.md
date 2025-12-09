@@ -170,7 +170,7 @@ const widget = new GitHubContributionWidget({
 
 ## Self-Hosting the API
 
-By default, the widget uses the hosted API at `github-contribution-graph.netlify.app`. To self-host:
+By default, the widget uses the hosted API at `githubgraph.jigyansurout.com`. To self-host:
 
 1. Clone the repository
 2. Deploy to Netlify (or similar)

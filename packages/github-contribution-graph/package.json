@@ -18,7 +18,7 @@
     "url": "git+https://github.com/iamjr15/github-contribution-graph.git",
     "directory": "packages/github-contribution-graph"
   },
-  "homepage": "https://github-contribution-graph.netlify.app",
+  "homepage": "https://githubgraph.jigyansurout.com",
   "bugs": {
     "url": "https://github.com/iamjr15/github-contribution-graph/issues"
   },

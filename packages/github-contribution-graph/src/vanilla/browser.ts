@@ -30,9 +30,17 @@ export function autoInit(): void {
   const username = container.dataset.login;
   if (!username) return;
 
+  // Parse data attributes for options
+  const showThumbnail = container.dataset.showThumbnail !== 'false';
+  const showHeader = container.dataset.showHeader !== 'false';
+  const showFooter = container.dataset.showFooter !== 'false';
+
   const widget = new GitHubContributionWidget({
     username,
     container,
+    showThumbnail,
+    showHeader,
+    showFooter,
   });
 
   widget.render();

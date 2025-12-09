@@ -50,9 +50,22 @@ widget.render();
 
 ```html
 <link rel="stylesheet" href="https://unpkg.com/github-contribution-graph/dist/gh.css">
-<div id="gh" data-login="octocat"></div>
+<div id="gh"
+     data-login="octocat"
+     data-show-thumbnail="true"
+     data-show-header="true"
+     data-show-footer="true"></div>
 <script src="https://unpkg.com/github-contribution-graph/dist/browser.global.js"></script>
 ```
+
+#### Data Attributes
+
+| Attribute | Default | Description |
+|-----------|---------|-------------|
+| `data-login` | required | GitHub username |
+| `data-show-thumbnail` | `"true"` | Show/hide GitHub logo below graph |
+| `data-show-header` | `"true"` | Show/hide contribution count header |
+| `data-show-footer` | `"true"` | Show/hide legend footer |
 
 ## React API
 

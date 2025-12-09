@@ -58,7 +58,10 @@
 <span class="code-tag">&lt;/style&gt;</span>
 
 <span class="code-tag">&lt;!-- 2. Create the container --&gt;</span>
-<span class="code-tag">&lt;div</span> <span class="code-attr">id</span>=<span class="code-string">"gh"</span> <span class="code-attr">data-login</span>=<span class="code-string">"<span class="dynamic-username">iamjr15</span>"</span><span class="code-tag">&gt;&lt;/div&gt;</span>
+<span class="code-tag">&lt;div</span> <span class="code-attr">id</span>=<span class="code-string">"gh"</span>
+     <span class="code-attr">data-login</span>=<span class="code-string">"<span class="dynamic-username">iamjr15</span>"</span>
+     <span class="code-attr">data-show-thumbnail</span>=<span class="code-string">"true"</span><span class="code-tag">&gt;&lt;/div&gt;</span>
+<span class="code-tag">&lt;!-- Optional: data-show-thumbnail="false" to hide GitHub logo --&gt;</span>
 
 <span class="code-tag">&lt;!-- 3. Include the script --&gt;</span>
 <span class="code-tag">&lt;script</span> <span class="code-attr">src</span>=<span class="code-string">"https://github-contribution-graph.netlify.app/assets/js/gh.js"</span><span class="code-tag">&gt;&lt;/script&gt;</span></code></pre>
@@ -99,7 +102,9 @@
           --gh-border-card-color: #333333;</span>
         }
       `}<span class="code-tag">&lt;/style&gt;</span>
-      <span class="code-tag">&lt;div</span> <span class="code-attr">id</span>=<span class="code-string">"gh"</span> <span class="code-attr">data-login</span>=<span class="code-string">"<span class="dynamic-username">iamjr15</span>"</span> /<span class="code-tag">&gt;</span>
+      <span class="code-tag">&lt;div</span> <span class="code-attr">id</span>=<span class="code-string">"gh"</span>
+           <span class="code-attr">data-login</span>=<span class="code-string">"<span class="dynamic-username">iamjr15</span>"</span>
+           <span class="code-attr">data-show-thumbnail</span>=<span class="code-string">"true"</span> /<span class="code-tag">&gt;</span>
     <span class="code-tag">&lt;/&gt;</span>
   );
 };</code></pre>
@@ -111,7 +116,9 @@
                         <button class="copy-btn" data-target="snippet-vue">COPY</button>
                     </div>
                     <pre><code id="snippet-vue"><span class="code-tag">&lt;template&gt;</span>
-  <span class="code-tag">&lt;div</span> <span class="code-attr">id</span>=<span class="code-string">"gh"</span> <span class="code-attr">:data-login</span>=<span class="code-string">"username"</span><span class="code-tag">&gt;&lt;/div&gt;</span>
+  <span class="code-tag">&lt;div</span> <span class="code-attr">id</span>=<span class="code-string">"gh"</span>
+       <span class="code-attr">:data-login</span>=<span class="code-string">"username"</span>
+       <span class="code-attr">data-show-thumbnail</span>=<span class="code-string">"true"</span><span class="code-tag">&gt;&lt;/div&gt;</span>
 <span class="code-tag">&lt;/template&gt;</span>
 
 <span class="code-tag">&lt;script setup&gt;</span>

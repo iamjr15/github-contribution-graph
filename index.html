@@ -264,7 +264,12 @@ onUnmounted(() => {
                     const username = input.value.trim();
                     if (!username) return;
                     ghContainer.dataset.login = username;
-                    window.renderGitHubWidget();
+                    btn.disabled = true;
+                    btn.textContent = 'LOADING...';
+                    window.renderGitHubWidget().finally(() => {
+                        btn.disabled = false;
+                        btn.textContent = 'FETCH';
+                    });
                     dynamicUsernames.forEach(span => span.textContent = username);
                 }
 

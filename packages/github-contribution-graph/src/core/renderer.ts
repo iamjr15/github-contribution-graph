@@ -28,7 +28,10 @@ export function createTable(): {
     const row = tbody.insertRow();
     const cell = row.insertCell();
     if (DAY_LABELS[i]) {
-      cell.innerHTML = `<span class="ghCalendarLabel">${DAY_LABELS[i]}</span>`;
+      const label = document.createElement('span');
+      label.className = 'ghCalendarLabel';
+      label.textContent = DAY_LABELS[i];
+      cell.appendChild(label);
     }
   }
 
@@ -113,7 +116,14 @@ export function createHeader(
   total.textContent = `${totalContributions} contributions in the last year`;
 
   const profile = document.createElement('div');
-  profile.innerHTML = `<a href="https://github.com/${username}">${username}</a><img src="${avatarUrl}" alt="${username}'s avatar">`;
+  const link = document.createElement('a');
+  link.href = `https://github.com/${encodeURIComponent(username)}`;
+  link.textContent = username;
+  const img = document.createElement('img');
+  img.src = avatarUrl;
+  img.alt = `${username}'s avatar`;
+  profile.appendChild(link);
+  profile.appendChild(img);
 
   header.appendChild(total);
   header.appendChild(profile);

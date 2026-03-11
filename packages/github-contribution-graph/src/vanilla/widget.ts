@@ -53,9 +53,31 @@ export class GitHubContributionWidget {
   }
 
   /**
+   * Get the configured username
+   */
+  getUsername(): string {
+    return this.config.username;
+  }
+
+  /**
+   * Show loading indicator
+   */
+  private showLoading(): void {
+    this.container.innerHTML = '';
+    const loader = document.createElement('div');
+    loader.className = 'ghCalendarLoading';
+    loader.textContent = 'Loading...';
+    this.container.appendChild(loader);
+  }
+
+  /**
    * Render the contribution graph
    */
   async render(): Promise<void> {
+    if (this.config.theme) {
+      applyTheme(this.container, this.config.theme);
+    }
+    this.showLoading();
     try {
       this.data = await fetchContributionData(
         this.config.username,
@@ -67,10 +89,6 @@ export class GitHubContributionWidget {
         showFooter: this.config.showFooter,
         showThumbnail: this.config.showThumbnail,
       });
-
-      if (this.config.theme) {
-        applyTheme(this.container, this.config.theme);
-      }
 
       this.config.onDataLoaded?.(this.data);
     } catch (error) {

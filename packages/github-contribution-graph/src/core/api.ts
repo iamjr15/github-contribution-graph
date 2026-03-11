@@ -25,7 +25,21 @@ export async function fetchContributionData(
 
   const url = `${apiEndpoint}?login=${encodeURIComponent(username.trim())}`;
 
-  const response = await fetch(url);
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 10000);
+
+  let response: Response;
+  try {
+    response = await fetch(url, { signal: controller.signal });
+  } catch (error) {
+    clearTimeout(timeoutId);
+    if (error instanceof DOMException && error.name === 'AbortError') {
+      throw new Error('Request timed out. Please try again.');
+    }
+    throw error;
+  }
+
+  clearTimeout(timeoutId);
 
   if (!response.ok) {
     throw new Error(`HTTP error! status: ${response.status}`);

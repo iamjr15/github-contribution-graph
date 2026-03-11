@@ -266,6 +266,15 @@ h1::after {
     color: var(--gh-btn-hover-text);
 }
 
+.input-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+.input-button:disabled:hover {
+    background: var(--gh-btn-bg);
+    color: var(--gh-btn-text);
+}
+
 /* Theme Picker Container */
 .theme-picker {
     display: flex;
@@ -290,16 +299,17 @@ h1::after {
     transform: scale(1.1);
 }
 
+/* Theme Button Colors */
+.theme-btn[data-theme="void"] { background: #000; border-color: #333; border-width: 1px; }
+.theme-btn[data-theme="slate"] { background: #222; border-color: #555; border-width: 1px; }
+.theme-btn[data-theme="midnight"] { background: #0f1016; border-color: #818cf8; border-width: 1px; }
+.theme-btn[data-theme="glacier"] { background: #f8fafc; border-color: #cbd5e1; border-width: 1px; }
+.theme-btn[data-theme="cyber"] { background: #000; border-color: #00ff41; border-width: 1px; }
+
 .theme-btn.active {
     border-color: var(--text-primary);
+    border-width: 2px;
 }
-
-/* Theme Button Colors */
-.theme-btn[data-theme="void"] { background: #000; border: 1px solid #333; }
-.theme-btn[data-theme="slate"] { background: #222; border: 1px solid #555; }
-.theme-btn[data-theme="midnight"] { background: #0f1016; border: 1px solid #818cf8; }
-.theme-btn[data-theme="glacier"] { background: #f8fafc; border: 1px solid #cbd5e1; }
-.theme-btn[data-theme="cyber"] { background: #000; border: 1px solid #00ff41; }
 
 
 /* The Graph Container */

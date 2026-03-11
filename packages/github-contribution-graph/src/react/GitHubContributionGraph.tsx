@@ -144,6 +144,13 @@ export const GitHubContributionGraph = forwardRef<
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [username, apiEndpoint]);
 
+  // Apply theme whenever it changes
+  useEffect(() => {
+    if (containerRef.current) {
+      applyTheme(containerRef.current, theme);
+    }
+  }, [theme]);
+
   // Render widget when data or options change
   useEffect(() => {
     if (data && containerRef.current) {
@@ -152,9 +159,8 @@ export const GitHubContributionGraph = forwardRef<
         showFooter,
         showThumbnail,
       });
-      applyTheme(containerRef.current, theme);
     }
-  }, [data, theme, showHeader, showFooter, showThumbnail, username]);
+  }, [data, showHeader, showFooter, showThumbnail, username]);
 
   // Expose ref methods
   useImperativeHandle(ref, () => ({

@@ -39,7 +39,8 @@ describe('fetchContributionData', () => {
 
     expect(result).toEqual(mockUserData);
     expect(fetch).toHaveBeenCalledWith(
-      `${DEFAULT_API_ENDPOINT}?login=testuser`
+      `${DEFAULT_API_ENDPOINT}?login=testuser`,
+      expect.objectContaining({ signal: expect.any(AbortSignal) })
     );
   });
 
@@ -74,7 +75,8 @@ describe('fetchContributionData', () => {
     await fetchContributionData('testuser', 'https://custom-api.com/data');
 
     expect(fetch).toHaveBeenCalledWith(
-      'https://custom-api.com/data?login=testuser'
+      'https://custom-api.com/data?login=testuser',
+      expect.objectContaining({ signal: expect.any(AbortSignal) })
     );
   });
 
@@ -104,7 +106,8 @@ describe('fetchContributionData', () => {
     await fetchContributionData('user name');
 
     expect(fetch).toHaveBeenCalledWith(
-      expect.stringContaining('login=user%20name')
+      expect.stringContaining('login=user%20name'),
+      expect.objectContaining({ signal: expect.any(AbortSignal) })
     );
   });
 
@@ -117,7 +120,8 @@ describe('fetchContributionData', () => {
     await fetchContributionData('  testuser  ');
 
     expect(fetch).toHaveBeenCalledWith(
-      `${DEFAULT_API_ENDPOINT}?login=testuser`
+      `${DEFAULT_API_ENDPOINT}?login=testuser`,
+      expect.objectContaining({ signal: expect.any(AbortSignal) })
     );
   });
 });

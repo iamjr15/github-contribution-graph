@@ -47,8 +47,13 @@ export function autoInit(): void {
 
   // Expose for manual re-render (backward compatibility)
   if (typeof window !== 'undefined') {
-    (window as Window & { renderGitHubWidget?: () => Promise<void> }).renderGitHubWidget = () =>
-      widget.render();
+    (window as Window & { renderGitHubWidget?: () => Promise<void> }).renderGitHubWidget = () => {
+      const currentUsername = container.dataset.login;
+      if (currentUsername && currentUsername !== widget.getUsername()) {
+        return widget.update({ username: currentUsername });
+      }
+      return widget.render();
+    };
   }
 }
 

@@ -174,3 +174,55 @@
     width: 10px;
     height: 10px;
 }
+
+/* Loading State */
+.ghCalendarLoading,
+[data-loading="true"] {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 150px;
+    width: 100%;
+    color: transparent;
+    font-size: 0;
+    user-select: none;
+    overflow: hidden;
+    background-color: var(--gh-bg-color, #0d1117);
+    border: var(--gh-border-card-width, 1px) solid var(--gh-border-card-color, #30363d);
+    border-radius: 6px;
+    padding: 16px;
+    box-sizing: border-box;
+}
+
+.ghCalendarLoading::after,
+[data-loading="true"]::after {
+    content: '';
+    display: block;
+    width: 100%;
+    max-width: 720px;
+    height: 94px;
+    flex-shrink: 0;
+    background-color: var(--gh-cell-level0-color, #21262d);
+    background-image: 
+        repeating-linear-gradient(
+            var(--gh-bg-color, #0d1117) 0px, 
+            var(--gh-bg-color, #0d1117) 4px, 
+            transparent 4px, 
+            transparent 14px
+        ),
+        repeating-linear-gradient(
+            90deg, 
+            var(--gh-bg-color, #0d1117) 0px, 
+            var(--gh-bg-color, #0d1117) 4px, 
+            transparent 4px, 
+            transparent 14px
+        );
+    animation: ghLoadingPulse 1.2s ease-in-out infinite alternate;
+    border-radius: 2px;
+}
+
+@keyframes ghLoadingPulse {
+    0% { opacity: 0.4; }
+    100% { opacity: 1; }
+}

@@ -7,8 +7,9 @@
     "packages/*"
   ],
   "scripts": {
-    "dev": "netlify dev",
-    "build": "npm run build -w packages/github-contribution-graph",
+    "dev": "wrangler pages dev cf-dist --compatibility-date=2026-04-02",
+    "build": "npm run build -w packages/github-contribution-graph && bash scripts/build-cf-dist.sh",
+    "build:cf": "bash scripts/build-cf-dist.sh",
     "test": "npm run test -w packages/github-contribution-graph",
     "test:coverage": "npm run test:coverage -w packages/github-contribution-graph"
   },

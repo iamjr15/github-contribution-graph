@@ -6,3 +6,4 @@ node_modules
 .DS_Store
 packages/*/dist
 coverage
+cf-dist/

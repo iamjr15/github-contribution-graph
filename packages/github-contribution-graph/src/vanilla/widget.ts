@@ -1,4 +1,5 @@
 import { fetchContributionData } from '../core/api';
+import { ROOT_CLASS } from '../core/constants';
 import { renderWidget } from '../core/renderer';
 import type { GitHubContributionGraphConfig, GitHubUser } from '../core/types';
 import { applyTheme } from '../styles/themes';
@@ -24,6 +25,7 @@ export class GitHubContributionWidget {
   constructor(config: GitHubContributionGraphConfig) {
     this.config = config;
     this.container = this.resolveContainer(config.container);
+    this.container.classList.add(ROOT_CLASS);
   }
 
   /**
@@ -130,6 +132,7 @@ export class GitHubContributionWidget {
 
     if (config.container) {
       this.container = this.resolveContainer(config.container);
+      this.container.classList.add(ROOT_CLASS);
     }
 
     return this.render();

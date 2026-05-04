@@ -10,7 +10,7 @@ import {
   createThumbnail,
   renderWidget,
 } from '../../src/core/renderer';
-import { CONTRIBUTION_LEVELS } from '../../src/core/constants';
+import { CONTRIBUTION_LEVELS, ROOT_CLASS } from '../../src/core/constants';
 import type { GitHubUser, ContributionMonth, ContributionWeek } from '../../src/core/types';
 
 describe('createTable', () => {
@@ -254,6 +254,7 @@ describe('renderWidget', () => {
   it('should render all components by default', () => {
     renderWidget(container, mockUser, 'testuser');
 
+    expect(container.classList.contains(ROOT_CLASS)).toBe(true);
     expect(container.querySelector('.ghCalendarHeader')).not.toBeNull();
     expect(container.querySelector('.ghCalendarCard')).not.toBeNull();
     expect(container.querySelector('.ghCalendarCardFooter')).not.toBeNull();

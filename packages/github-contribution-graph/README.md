@@ -1,15 +1,15 @@
-# github-contribution-graph
+# github-contrib-graph
 
 A lightweight, customizable GitHub contribution graph widget for any website.
 
-[![npm version](https://img.shields.io/npm/v/github-contribution-graph.svg)](https://npmjs.com/package/github-contribution-graph)
-[![npm downloads](https://img.shields.io/npm/dm/github-contribution-graph.svg)](https://npmjs.com/package/github-contribution-graph)
-[![License](https://img.shields.io/npm/l/github-contribution-graph.svg)](https://github.com/iamjr15/github-contribution-graph/blob/main/LICENSE)
+[![npm version](https://img.shields.io/npm/v/github-contrib-graph.svg)](https://npmjs.com/package/github-contrib-graph)
+[![npm downloads](https://img.shields.io/npm/dm/github-contrib-graph.svg)](https://npmjs.com/package/github-contrib-graph)
+[![License](https://img.shields.io/npm/l/github-contrib-graph.svg)](https://github.com/iamjr15/github-contribution-graph/blob/main/LICENSE)
 
 ## Installation
 
 ```bash
-npm install github-contribution-graph
+npm install github-contrib-graph
 ```
 
 ## Quick Start
@@ -17,8 +17,8 @@ npm install github-contribution-graph
 ### React
 
 ```tsx
-import { GitHubContributionGraph } from 'github-contribution-graph/react';
-import 'github-contribution-graph/styles.css';
+import { GitHubContributionGraph } from 'github-contrib-graph/react';
+import 'github-contrib-graph/styles.css';
 
 function App() {
   return (
@@ -34,8 +34,8 @@ function App() {
 ### Vanilla JavaScript
 
 ```js
-import { GitHubContributionWidget } from 'github-contribution-graph/vanilla';
-import 'github-contribution-graph/styles.css';
+import { GitHubContributionWidget } from 'github-contrib-graph/vanilla';
+import 'github-contrib-graph/styles.css';
 
 const widget = new GitHubContributionWidget({
   username: 'octocat',
@@ -49,13 +49,13 @@ widget.render();
 ### Script Tag (CDN)
 
 ```html
-<link rel="stylesheet" href="https://unpkg.com/github-contribution-graph/dist/gh.css">
+<link rel="stylesheet" href="https://unpkg.com/github-contrib-graph/dist/gh.css">
 <div id="gh"
      data-login="octocat"
      data-show-thumbnail="true"
      data-show-header="true"
      data-show-footer="true"></div>
-<script src="https://unpkg.com/github-contribution-graph/dist/browser.global.js"></script>
+<script src="https://unpkg.com/github-contrib-graph/dist/browser.global.js"></script>
 ```
 
 #### Data Attributes
@@ -72,7 +72,7 @@ widget.render();
 ### GitHubContributionGraph
 
 ```tsx
-import { GitHubContributionGraph } from 'github-contribution-graph/react';
+import { GitHubContributionGraph } from 'github-contrib-graph/react';
 
 <GitHubContributionGraph
   username="octocat"           // Required: GitHub username
@@ -92,7 +92,7 @@ import { GitHubContributionGraph } from 'github-contribution-graph/react';
 ### useContributionData Hook
 
 ```tsx
-import { useContributionData } from 'github-contribution-graph/react';
+import { useContributionData } from 'github-contrib-graph/react';
 
 function CustomGraph() {
   const { data, loading, error, refetch } = useContributionData('octocat', {
@@ -117,7 +117,7 @@ function CustomGraph() {
 ### GitHubContributionWidget
 
 ```js
-import { GitHubContributionWidget } from 'github-contribution-graph/vanilla';
+import { GitHubContributionWidget } from 'github-contrib-graph/vanilla';
 
 const widget = new GitHubContributionWidget({
   username: 'octocat',           // Required: GitHub username

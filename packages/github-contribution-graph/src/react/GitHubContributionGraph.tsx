@@ -6,6 +6,7 @@ import React, {
   useImperativeHandle,
 } from 'react';
 import { fetchContributionData } from '../core/api';
+import { ROOT_CLASS } from '../core/constants';
 import { renderWidget } from '../core/renderer';
 import { applyTheme } from '../styles/themes';
 import type { GitHubUser, ThemePreset, ThemeConfig } from '../core/types';
@@ -76,8 +77,8 @@ export interface GitHubContributionGraphRef {
  *
  * @example
  * ```tsx
- * import { GitHubContributionGraph } from 'github-contribution-graph/react';
- * import 'github-contribution-graph/styles.css';
+ * import { GitHubContributionGraph } from 'github-contrib-graph/react';
+ * import 'github-contrib-graph/styles.css';
  *
  * function App() {
  *   return (
@@ -109,6 +110,7 @@ export const GitHubContributionGraph = forwardRef<
   } = props;
 
   const containerRef = useRef<HTMLDivElement>(null);
+  const rootClassName = [ROOT_CLASS, className].filter(Boolean).join(' ');
   const [data, setData] = useState<GitHubUser | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
@@ -170,7 +172,7 @@ export const GitHubContributionGraph = forwardRef<
 
   if (error) {
     return (
-      <div className={className} style={style}>
+      <div className={rootClassName} style={style}>
         <p style={{ color: '#f85149' }}>Failed to load contribution data.</p>
       </div>
     );
@@ -179,7 +181,7 @@ export const GitHubContributionGraph = forwardRef<
   return (
     <div
       ref={containerRef}
-      className={className}
+      className={rootClassName}
       style={style}
       data-loading={loading}
     />

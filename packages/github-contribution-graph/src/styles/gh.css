@@ -22,16 +22,16 @@
 }
 
 /* Main block */
-#gh {
+:where(#gh, .ghContributionGraph) {
     color: var(--gh-text-default-color);
     width: fit-content;
     font-family: var(--gh-font-default-family);
 }
-#gh a {
+:where(#gh, .ghContributionGraph) a {
     text-decoration: none;
     color: var(--gh-text-inactive-color)
 }
-#gh a:hover {
+:where(#gh, .ghContributionGraph) a:hover {
     color: var(--gh-link-hover-color);
 }
 

@@ -3,6 +3,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import React from 'react';
 import { GitHubContributionGraph } from '../../src/react/GitHubContributionGraph';
 import { useContributionData } from '../../src/react/useContributionData';
+import { ROOT_CLASS } from '../../src/core/constants';
 import type { GitHubUser } from '../../src/core/types';
 
 // Mock the API module
@@ -126,6 +127,7 @@ describe('GitHubContributionGraph', () => {
 
     await waitFor(() => {
       expect(container.querySelector('.custom-class')).toBeTruthy();
+      expect(container.querySelector(`.${ROOT_CLASS}`)).toBeTruthy();
     });
   });
 

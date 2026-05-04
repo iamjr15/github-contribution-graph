@@ -2,6 +2,31 @@ import { DEFAULT_API_ENDPOINT } from './constants';
 import type { APIResponse, GitHubUser } from './types';
 
 /**
+ * Build an API URL while preserving existing query parameters.
+ */
+function buildContributionUrl(apiEndpoint: string, username: string): string {
+  const encodedUsername = encodeURIComponent(username);
+
+  try {
+    const base =
+      typeof window !== 'undefined' && window.location?.origin
+        ? window.location.origin
+        : 'http://localhost';
+    const url = new URL(apiEndpoint, base);
+    url.searchParams.set('login', username);
+
+    if (!/^[a-zA-Z][a-zA-Z\d+\-.]*:/.test(apiEndpoint)) {
+      return `${url.pathname}${url.search}${url.hash}`;
+    }
+
+    return url.toString();
+  } catch {
+    const separator = apiEndpoint.includes('?') ? '&' : '?';
+    return `${apiEndpoint}${separator}login=${encodedUsername}`;
+  }
+}
+
+/**
  * Fetch contribution data for a GitHub user
  *
  * @param username - GitHub username
@@ -19,11 +44,12 @@ export async function fetchContributionData(
   username: string,
   apiEndpoint: string = DEFAULT_API_ENDPOINT
 ): Promise<GitHubUser> {
-  if (!username || typeof username !== 'string') {
+  if (!username || typeof username !== 'string' || !username.trim()) {
     throw new Error('Username is required');
   }
 
-  const url = `${apiEndpoint}?login=${encodeURIComponent(username.trim())}`;
+  const trimmedUsername = username.trim();
+  const url = buildContributionUrl(apiEndpoint, trimmedUsername);
 
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), 10000);

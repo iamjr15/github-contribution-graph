@@ -1,4 +1,4 @@
-import { CONTRIBUTION_LEVELS, DAY_LABELS, REPO_URL } from './constants';
+import { CONTRIBUTION_LEVELS, DAY_LABELS, REPO_URL, ROOT_CLASS } from './constants';
 import type {
   ContributionMonth,
   ContributionWeek,
@@ -208,6 +208,8 @@ export function renderWidget(
   options: RenderOptions = {}
 ): void {
   const { showHeader = true, showFooter = true, showThumbnail = true } = options;
+
+  container.classList.add(ROOT_CLASS);
 
   // Clear existing content
   container.innerHTML = '';

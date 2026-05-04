@@ -6,6 +6,11 @@ import type { ContributionLevel, ThemeConfig, ThemePreset } from './types';
 export const DEFAULT_API_ENDPOINT = 'https://githubgraph.jigyansurout.com/api/ghcg/fetch-data';
 
 /**
+ * Root class applied to every rendered widget container.
+ */
+export const ROOT_CLASS = 'ghContributionGraph';
+
+/**
  * Repository URL for the widget
  */
 export const REPO_URL = 'https://github.com/iamjr15/github-contribution-graph';

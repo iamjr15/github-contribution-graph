@@ -80,6 +80,34 @@ describe('fetchContributionData', () => {
     );
   });
 
+  it('should preserve existing query parameters on custom API endpoint', async () => {
+    vi.mocked(fetch).mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ user: mockUserData }),
+    } as Response);
+
+    await fetchContributionData('testuser', 'https://custom-api.com/data?cache=1');
+
+    expect(fetch).toHaveBeenCalledWith(
+      'https://custom-api.com/data?cache=1&login=testuser',
+      expect.objectContaining({ signal: expect.any(AbortSignal) })
+    );
+  });
+
+  it('should support relative custom API endpoints', async () => {
+    vi.mocked(fetch).mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ user: mockUserData }),
+    } as Response);
+
+    await fetchContributionData('testuser', '/api/contributions?cache=1');
+
+    expect(fetch).toHaveBeenCalledWith(
+      '/api/contributions?cache=1&login=testuser',
+      expect.objectContaining({ signal: expect.any(AbortSignal) })
+    );
+  });
+
   it('should throw error on HTTP error status', async () => {
     vi.mocked(fetch).mockResolvedValueOnce({
       ok: false,
@@ -97,6 +125,12 @@ describe('fetchContributionData', () => {
     );
   });
 
+  it('should throw error when username is only whitespace', async () => {
+    await expect(fetchContributionData('   ')).rejects.toThrow(
+      'Username is required'
+    );
+  });
+
   it('should encode special characters in username', async () => {
     vi.mocked(fetch).mockResolvedValueOnce({
       ok: true,
@@ -106,7 +140,7 @@ describe('fetchContributionData', () => {
     await fetchContributionData('user name');
 
     expect(fetch).toHaveBeenCalledWith(
-      expect.stringContaining('login=user%20name'),
+      expect.stringContaining('login=user+name'),
       expect.objectContaining({ signal: expect.any(AbortSignal) })
     );
   });

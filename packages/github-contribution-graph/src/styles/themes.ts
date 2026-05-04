@@ -1,12 +1,17 @@
 import { THEME_PRESETS } from '../core/constants';
 import type { ThemeConfig, ThemePreset } from '../core/types';
 
-/**
- * Convert camelCase to kebab-case
- */
-function camelToKebab(str: string): string {
-  return str.replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`);
-}
+const THEME_CSS_VARIABLES: Record<keyof ThemeConfig, string> = {
+  bgColor: '--gh-bg-color',
+  textColor: '--gh-text-default-color',
+  cellLevel0: '--gh-cell-level0-color',
+  cellLevel1: '--gh-cell-level1-color',
+  cellLevel2: '--gh-cell-level2-color',
+  cellLevel3: '--gh-cell-level3-color',
+  cellLevel4: '--gh-cell-level4-color',
+  borderColor: '--gh-border-card-color',
+  fontFamily: '--gh-font-default-family',
+};
 
 /**
  * Apply a theme to an element by setting CSS custom properties
@@ -71,8 +76,8 @@ export function getThemeCSS(theme: ThemePreset | ThemeConfig): string {
   const cssVars: string[] = [];
 
   for (const [key, value] of Object.entries(config)) {
-    if (value) {
-      const cssKey = `--gh-${camelToKebab(key).replace('color', '-color')}`;
+    const cssKey = THEME_CSS_VARIABLES[key as keyof ThemeConfig];
+    if (cssKey && value) {
       cssVars.push(`${cssKey}: ${value};`);
     }
   }

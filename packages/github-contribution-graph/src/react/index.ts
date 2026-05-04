@@ -3,6 +3,7 @@ export {
   GitHubContributionGraph,
   type GitHubContributionGraphProps,
   type GitHubContributionGraphRef,
+  type GitHubContributionGraphRenderState,
 } from './GitHubContributionGraph';
 
 export {
@@ -25,4 +26,12 @@ export type {
   ContributionMonth,
   ThemeConfig,
   ThemePreset,
+  RenderOptions,
+  CalendarClassNames,
+  DayStyle,
+  FooterLabels,
+  DayRenderContext,
+  HeaderRenderContext,
+  FooterRenderContext,
+  ThumbnailRenderContext,
 } from '../core/types';

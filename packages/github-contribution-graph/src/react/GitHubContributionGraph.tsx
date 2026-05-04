@@ -9,9 +9,17 @@ import { fetchContributionData } from '../core/api';
 import { ROOT_CLASS } from '../core/constants';
 import { renderWidget } from '../core/renderer';
 import { applyTheme } from '../styles/themes';
-import type { GitHubUser, ThemePreset, ThemeConfig } from '../core/types';
+import type { GitHubUser, ThemePreset, ThemeConfig, RenderOptions } from '../core/types';
 
-export interface GitHubContributionGraphProps {
+export interface GitHubContributionGraphRenderState {
+  username: string;
+  data: GitHubUser | null;
+  loading: boolean;
+  error: Error | null;
+  refresh: () => Promise<void>;
+}
+
+export interface GitHubContributionGraphProps extends RenderOptions {
   /**
    * GitHub username to display contributions for
    */
@@ -59,6 +67,19 @@ export interface GitHubContributionGraphProps {
    * Callback when loading state changes
    */
   onLoading?: (isLoading: boolean) => void;
+  /**
+   * Fully custom React renderer. When provided, the package only fetches data
+   * and lets you render every pixel yourself.
+   */
+  render?: (state: GitHubContributionGraphRenderState) => React.ReactNode;
+  /**
+   * Optional custom loading UI for the default renderer path
+   */
+  loadingFallback?: React.ReactNode;
+  /**
+   * Optional custom error UI for the default renderer path
+   */
+  errorFallback?: React.ReactNode | ((error: Error) => React.ReactNode);
 }
 
 export interface GitHubContributionGraphRef {
@@ -102,15 +123,33 @@ export const GitHubContributionGraph = forwardRef<
     showHeader = true,
     showFooter = true,
     showThumbnail = true,
+    showMonthLabels,
+    showWeekdayLabels,
+    showTooltips,
+    dayLabels,
+    footerLabels,
+    classNames,
+    dayClassName,
+    dayStyle,
+    dayAttributes,
+    tooltipFormatter,
+    monthLabelFormatter,
+    renderDayContents,
+    renderHeader,
+    renderFooter,
+    renderThumbnail,
     className,
     style,
     onDataLoaded,
     onError,
     onLoading,
+    render: customRender,
+    loadingFallback,
+    errorFallback,
   } = props;
 
   const containerRef = useRef<HTMLDivElement>(null);
-  const rootClassName = [ROOT_CLASS, className].filter(Boolean).join(' ');
+  const rootClassName = [ROOT_CLASS, classNames?.root, className].filter(Boolean).join(' ');
   const [data, setData] = useState<GitHubUser | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
@@ -155,14 +194,51 @@ export const GitHubContributionGraph = forwardRef<
 
   // Render widget when data or options change
   useEffect(() => {
-    if (data && containerRef.current) {
+    if (data && containerRef.current && !customRender) {
       renderWidget(containerRef.current, data, username, {
         showHeader,
         showFooter,
         showThumbnail,
+        showMonthLabels,
+        showWeekdayLabels,
+        showTooltips,
+        dayLabels,
+        footerLabels,
+        classNames,
+        dayClassName,
+        dayStyle,
+        dayAttributes,
+        tooltipFormatter,
+        monthLabelFormatter,
+        renderDayContents,
+        renderHeader,
+        renderFooter,
+        renderThumbnail,
       });
     }
-  }, [data, showHeader, showFooter, showThumbnail, username]);
+  }, [
+    data,
+    showHeader,
+    showFooter,
+    showThumbnail,
+    showMonthLabels,
+    showWeekdayLabels,
+    showTooltips,
+    dayLabels,
+    footerLabels,
+    classNames,
+    dayClassName,
+    dayStyle,
+    dayAttributes,
+    tooltipFormatter,
+    monthLabelFormatter,
+    renderDayContents,
+    renderHeader,
+    renderFooter,
+    renderThumbnail,
+    username,
+    customRender,
+  ]);
 
   // Expose ref methods
   useImperativeHandle(ref, () => ({
@@ -170,10 +246,40 @@ export const GitHubContributionGraph = forwardRef<
     getData: () => data,
   }));
 
+  if (customRender) {
+    return (
+      <div
+        ref={containerRef}
+        className={rootClassName}
+        style={style}
+        data-error={error ? 'true' : undefined}
+      >
+        {customRender({ username, data, loading, error, refresh: fetchData })}
+      </div>
+    );
+  }
+
+  if (loading && loadingFallback) {
+    return (
+      <div
+        ref={containerRef}
+        className={rootClassName}
+        style={style}
+      >
+        {loadingFallback}
+      </div>
+    );
+  }
+
   if (error) {
+    const renderedError =
+      typeof errorFallback === 'function' ? errorFallback(error) : errorFallback;
+
     return (
       <div className={rootClassName} style={style}>
-        <p style={{ color: '#f85149' }}>Failed to load contribution data.</p>
+        {renderedError ?? (
+          <p style={{ color: '#f85149' }}>Failed to load contribution data.</p>
+        )}
       </div>
     );
   }

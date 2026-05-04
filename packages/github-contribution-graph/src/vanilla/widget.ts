@@ -86,11 +86,7 @@ export class GitHubContributionWidget {
         this.config.apiEndpoint
       );
 
-      renderWidget(this.container, this.data, this.config.username, {
-        showHeader: this.config.showHeader,
-        showFooter: this.config.showFooter,
-        showThumbnail: this.config.showThumbnail,
-      });
+      renderWidget(this.container, this.data, this.config.username, this.config);
 
       this.config.onDataLoaded?.(this.data);
     } catch (error) {

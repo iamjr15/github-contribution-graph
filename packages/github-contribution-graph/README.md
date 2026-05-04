@@ -16,8 +16,11 @@ A lightweight, customizable GitHub contribution graph widget for React, vanilla 
 - Vanilla JavaScript widget class
 - Script-tag browser bundle for static sites
 - Built-in dark and light themes
-- Custom theming through CSS variables
-- Optional header, footer legend, and GitHub attribution
+- Custom theming through props or CSS variables
+- Class hooks for every major rendered element
+- Per-day class, style, attribute, tooltip, and content render hooks
+- Replaceable header, footer legend, and GitHub attribution
+- Fully custom React rendering when you only want the package to fetch data
 - Hosted API by default, with support for your own API endpoint
 - TypeScript definitions for all public APIs
 
@@ -115,6 +118,23 @@ import { GitHubContributionGraph } from 'github-contrib-graph/react';
   showHeader={true}
   showFooter={true}
   showThumbnail={true}
+  showMonthLabels={true}
+  showWeekdayLabels={true}
+  showTooltips={true}
+  dayLabels={['', 'Mon', '', 'Wed', '', 'Fri', '']}
+  footerLabels={{ less: 'Less', more: 'More' }}
+  classNames={{ root: 'my-graph-root', dayCell: 'my-day-cell' }}
+  dayClassName={({ day }) => (day.contributionCount > 0 ? 'has-activity' : '')}
+  dayStyle={({ day }) => ({
+    opacity: day.contributionCount === 0 ? '0.45' : '1',
+  })}
+  dayAttributes={({ day }) => ({
+    'aria-label': `${day.contributionCount} contributions on ${day.date}`,
+  })}
+  tooltipFormatter={({ day, date }) =>
+    `${day.contributionCount} contributions on ${date.toLocaleDateString()}`
+  }
+  monthLabelFormatter={(month) => month.name.slice(0, 3)}
   className="my-graph"
   style={{ margin: 20 }}
   onDataLoaded={(data) => {}}
@@ -157,6 +177,16 @@ const widget = new GitHubContributionWidget({
   showHeader: true,
   showFooter: true,
   showThumbnail: true,
+  showMonthLabels: true,
+  showWeekdayLabels: true,
+  showTooltips: true,
+  classNames: {
+    root: 'profile-graph',
+    dayCell: 'profile-graph__day',
+  },
+  dayStyle: ({ day }) => ({
+    transform: day.contributionCount > 20 ? 'scale(1.15)' : 'scale(1)',
+  }),
   onDataLoaded: (data) => {},
   onError: (error) => {},
 });
@@ -217,6 +247,224 @@ You can also override CSS variables directly on the widget root:
 ```
 
 The rendered root receives the `ghContributionGraph` class, so styles work even when your container is not `#gh`.
+
+## Customization
+
+The package has layered customization. You can use only the built-in presets, override the default DOM with class and render hooks, or skip the default DOM entirely in React and render your own calendar from the fetched data.
+
+### Theme Object
+
+Every theme key can be passed through the `theme` prop or config option. String values are used as-is. Numeric values are converted to `px`.
+
+```tsx
+<GitHubContributionGraph
+  username="octocat"
+  theme={{
+    bgColor: '#080c10',
+    textColor: '#f4f7fb',
+    inactiveTextColor: '#7d8794',
+    linkHoverColor: '#8ab4ff',
+    cellLevel0: '#18202a',
+    cellLevel1: '#163b2a',
+    cellLevel2: '#196c3d',
+    cellLevel3: '#32a852',
+    cellLevel4: '#7ee787',
+    cellSize: 13,
+    cellGap: 4,
+    cellRadius: 4,
+    cellBorderColor: 'rgba(255,255,255,0.08)',
+    cellOutlineColor: 'transparent',
+    tooltipBgColor: '#f4f7fb',
+    tooltipTextColor: '#080c10',
+    tooltipPadding: '8px 10px',
+    tooltipRadius: 8,
+    tooltipFontSize: 12,
+    borderColor: '#27313d',
+    borderWidth: 1,
+    cardPadding: 18,
+    cardPaddingBlock: 10,
+    cardRadius: 10,
+    canvasPaddingTop: 8,
+    canvasMarginInline: 12,
+    headerHeight: 28,
+    headerMarginBottom: 8,
+    headerFontSize: 14,
+    avatarSize: 24,
+    footerPadding: '8px 32px',
+    footerFontSize: 12,
+    fontFamily: 'Inter, ui-sans-serif, system-ui, sans-serif',
+  }}
+/>
+```
+
+The matching CSS variables are:
+
+| Theme key | CSS variable |
+| --- | --- |
+| `bgColor` | `--gh-bg-color` |
+| `textColor` | `--gh-text-default-color` |
+| `inactiveTextColor` | `--gh-text-inactive-color` |
+| `linkHoverColor` | `--gh-link-hover-color` |
+| `cellLevel0` - `cellLevel4` | `--gh-cell-level0-color` - `--gh-cell-level4-color` |
+| `cellSize` | `--gh-cell-size` |
+| `cellGap` | `--gh-cell-gap` |
+| `cellRadius` | `--gh-cell-radius` |
+| `cellBorderColor` | `--gh-cell-border-color` |
+| `cellOutlineColor` | `--gh-cell-outline-color` |
+| `tooltipBgColor` | `--gh-cell-info-bg-color` |
+| `tooltipTextColor` | `--gh-tooltip-text-color` |
+| `tooltipPadding` | `--gh-tooltip-padding` |
+| `tooltipRadius` | `--gh-tooltip-radius` |
+| `tooltipFontSize` | `--gh-tooltip-font-size` |
+| `borderColor` | `--gh-border-card-color` |
+| `borderWidth` | `--gh-border-card-width` |
+| `cardPadding` | `--gh-card-padding` |
+| `cardPaddingBlock` | `--gh-card-padding-block` |
+| `cardRadius` | `--gh-card-radius` |
+| `canvasPaddingTop` | `--gh-canvas-padding-top` |
+| `canvasMarginInline` | `--gh-canvas-margin-inline` |
+| `headerHeight` | `--gh-header-height` |
+| `headerMarginBottom` | `--gh-header-margin-bottom` |
+| `headerFontSize` | `--gh-header-font-size` |
+| `avatarSize` | `--gh-avatar-size` |
+| `footerPadding` | `--gh-footer-padding` |
+| `footerFontSize` | `--gh-footer-font-size` |
+| `fontFamily` | `--gh-font-default-family` |
+
+### Labels, Tooltips, Classes, And Cells
+
+```tsx
+<GitHubContributionGraph
+  username="octocat"
+  showMonthLabels
+  showWeekdayLabels
+  showTooltips
+  dayLabels={['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']}
+  footerLabels={{ less: 'Quiet', more: 'Busy' }}
+  classNames={{
+    root: 'activity',
+    header: 'activity__header',
+    total: 'activity__total',
+    profile: 'activity__profile',
+    profileLink: 'activity__profile-link',
+    avatar: 'activity__avatar',
+    card: 'activity__card',
+    canvas: 'activity__canvas',
+    table: 'activity__table',
+    monthLabel: 'activity__month',
+    dayLabel: 'activity__weekday',
+    dayCell: 'activity__day',
+    tooltip: 'activity__tooltip',
+    footer: 'activity__footer',
+    footerLegend: 'activity__legend',
+    thumbnail: 'activity__thumbnail',
+    thumbnailLink: 'activity__thumbnail-link',
+  }}
+  dayClassName={({ day }) =>
+    day.contributionCount >= 10 ? 'activity__day--hot' : undefined
+  }
+  dayStyle={({ day }) => ({
+    opacity: day.contributionCount === 0 ? '0.35' : '1',
+    borderRadius: day.contributionCount >= 10 ? 6 : 2,
+  })}
+  dayAttributes={({ day }) => ({
+    'aria-label': `${day.contributionCount} contributions on ${day.date}`,
+    'data-busy': day.contributionCount >= 10,
+  })}
+  tooltipFormatter={({ day, date, username }) =>
+    `${username} made ${day.contributionCount} contributions on ${date.toLocaleDateString()}`
+  }
+  monthLabelFormatter={(month) => month.name.toUpperCase()}
+/>
+```
+
+Every day cell also receives these default attributes, which makes CSS-only custom designs straightforward:
+
+```css
+.activity__day[data-level='FOURTH_QUARTILE'] {
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--gh-cell-level4-color), white 20%);
+}
+
+.activity__day[data-count='0'] {
+  opacity: 0.4;
+}
+```
+
+### Replace Individual Sections
+
+The default renderer can replace the header, footer, thumbnail, or the contents inside each day cell. These hooks return DOM nodes or strings.
+
+```ts
+const widget = new GitHubContributionWidget({
+  username: 'octocat',
+  container: '#my-graph',
+  renderHeader: ({ username, totalContributions, user }) => {
+    const header = document.createElement('header');
+    header.className = 'activity-header';
+
+    const avatar = document.createElement('img');
+    avatar.src = user.avatarUrl;
+    avatar.alt = `${username}'s avatar`;
+
+    const name = document.createElement('strong');
+    name.textContent = username;
+
+    const total = document.createElement('span');
+    total.textContent = `${totalContributions.toLocaleString()} contributions`;
+
+    header.append(avatar, name, total);
+    return header;
+  },
+  renderDayContents: ({ day }) => {
+    const dot = document.createElement('span');
+    dot.className = 'activity-dot';
+    dot.textContent = day.contributionCount > 0 ? String(day.contributionCount) : '';
+    return dot;
+  },
+  renderFooter: ({ labels }) => {
+    const footer = document.createElement('footer');
+    footer.textContent = `${labels.less} / ${labels.more}`;
+    return footer;
+  },
+  renderThumbnail: () => null,
+});
+```
+
+When using the React component, `renderHeader`, `renderFooter`, `renderThumbnail`, and `renderDayContents` still belong to the default DOM renderer, so they return DOM nodes. Use the React `render` prop if you want JSX-level control.
+
+### Fully Custom React Render
+
+The `render` prop lets React users use the package only for fetching and state management. You receive the raw GitHub contribution calendar and can render every pixel yourself.
+
+```tsx
+<GitHubContributionGraph
+  username="octocat"
+  render={({ data, loading, error, refresh }) => {
+    if (loading) return <p>Loading activity...</p>;
+    if (error) return <button onClick={refresh}>Retry</button>;
+
+    const calendar = data?.contributionsCollection.contributionCalendar;
+
+    return (
+      <section className="activity-board">
+        <strong>{calendar?.totalContributions.toLocaleString()} contributions</strong>
+        <div className="activity-grid">
+          {calendar?.weeks.flatMap((week) =>
+            week.contributionDays.map((day) => (
+              <span
+                key={day.date}
+                className="activity-cell"
+                data-level={day.contributionLevel}
+                title={`${day.contributionCount} on ${day.date}`}
+              />
+            ))
+          )}
+        </div>
+      </section>
+    );
+  }}
+/>
+```
 
 ## API Endpoint
 

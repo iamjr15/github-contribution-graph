@@ -131,6 +131,90 @@ describe('GitHubContributionGraph', () => {
     });
   });
 
+  it('should pass advanced render options to the default renderer', async () => {
+    vi.mocked(fetchContributionData).mockResolvedValueOnce(mockUser);
+
+    const { container } = render(
+      <GitHubContributionGraph
+        username="testuser"
+        classNames={{ root: 'root-hook', dayCell: 'day-hook' }}
+        dayClassName={({ day }) => (day.contributionCount > 0 ? 'has-work' : undefined)}
+        dayStyle={{ borderRadius: 7 }}
+        dayAttributes={({ day }) => ({ 'aria-label': `${day.date} activity` })}
+        tooltipFormatter={({ day }) => `custom:${day.contributionCount}`}
+        footerLabels={{ less: 'Low', more: 'High' }}
+      />
+    );
+
+    await waitFor(() => {
+      expect(container.querySelector('.root-hook')).toBeTruthy();
+      expect(container.querySelector('.day-hook')).toBeTruthy();
+      expect(container.querySelector('.has-work')).toBeTruthy();
+      expect((container.querySelector('.has-work') as HTMLElement).style.borderRadius).toBe(
+        '7px'
+      );
+      expect(container.querySelector('.has-work')?.getAttribute('aria-label')).toBe(
+        '2024-01-01 activity'
+      );
+      expect(container.querySelector('.ghCalendarTooltip')?.textContent).toBe('custom:5');
+      expect(container.textContent).toContain('Low');
+      expect(container.textContent).toContain('High');
+    });
+  });
+
+  it('should support fully custom React rendering with fetched data', async () => {
+    vi.mocked(fetchContributionData).mockResolvedValueOnce(mockUser);
+
+    render(
+      <GitHubContributionGraph
+        username="testuser"
+        render={({ data, loading, username }) => (
+          <div data-testid="custom-graph">
+            {loading
+              ? 'loading'
+              : `${username}:${data?.contributionsCollection.contributionCalendar.totalContributions}`}
+          </div>
+        )}
+      />
+    );
+
+    await waitFor(() => {
+      expect(screen.getByTestId('custom-graph').textContent).toBe('testuser:500');
+    });
+  });
+
+  it('should support custom loading and error fallbacks', async () => {
+    vi.mocked(fetchContributionData).mockImplementationOnce(
+      () => new Promise(() => {})
+    );
+
+    const { unmount } = render(
+      <GitHubContributionGraph
+        username="testuser"
+        loadingFallback={<div data-testid="loading-fallback">warming up</div>}
+      />
+    );
+
+    expect(screen.getByTestId('loading-fallback').textContent).toBe('warming up');
+    expect(document.querySelector('[data-loading="true"]')).toBeNull();
+    unmount();
+
+    vi.mocked(fetchContributionData).mockRejectedValueOnce(new Error('API Error'));
+
+    render(
+      <GitHubContributionGraph
+        username="testuser"
+        errorFallback={(error) => (
+          <div data-testid="error-fallback">{error.message}</div>
+        )}
+      />
+    );
+
+    await waitFor(() => {
+      expect(screen.getByTestId('error-fallback').textContent).toBe('API Error');
+    });
+  });
+
   it('should apply custom style', async () => {
     vi.mocked(fetchContributionData).mockResolvedValueOnce(mockUser);
 

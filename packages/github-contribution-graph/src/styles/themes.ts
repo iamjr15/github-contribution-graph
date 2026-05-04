@@ -4,14 +4,42 @@ import type { ThemeConfig, ThemePreset } from '../core/types';
 const THEME_CSS_VARIABLES: Record<keyof ThemeConfig, string> = {
   bgColor: '--gh-bg-color',
   textColor: '--gh-text-default-color',
+  inactiveTextColor: '--gh-text-inactive-color',
+  linkHoverColor: '--gh-link-hover-color',
   cellLevel0: '--gh-cell-level0-color',
   cellLevel1: '--gh-cell-level1-color',
   cellLevel2: '--gh-cell-level2-color',
   cellLevel3: '--gh-cell-level3-color',
   cellLevel4: '--gh-cell-level4-color',
+  cellSize: '--gh-cell-size',
+  cellGap: '--gh-cell-gap',
+  cellRadius: '--gh-cell-radius',
+  cellBorderColor: '--gh-cell-border-color',
+  cellOutlineColor: '--gh-cell-outline-color',
+  tooltipBgColor: '--gh-cell-info-bg-color',
+  tooltipTextColor: '--gh-tooltip-text-color',
+  tooltipPadding: '--gh-tooltip-padding',
+  tooltipRadius: '--gh-tooltip-radius',
+  tooltipFontSize: '--gh-tooltip-font-size',
   borderColor: '--gh-border-card-color',
+  borderWidth: '--gh-border-card-width',
+  cardPadding: '--gh-card-padding',
+  cardPaddingBlock: '--gh-card-padding-block',
+  cardRadius: '--gh-card-radius',
+  canvasPaddingTop: '--gh-canvas-padding-top',
+  canvasMarginInline: '--gh-canvas-margin-inline',
+  headerHeight: '--gh-header-height',
+  headerMarginBottom: '--gh-header-margin-bottom',
+  headerFontSize: '--gh-header-font-size',
+  avatarSize: '--gh-avatar-size',
+  footerPadding: '--gh-footer-padding',
+  footerFontSize: '--gh-footer-font-size',
   fontFamily: '--gh-font-default-family',
 };
+
+function normalizeCSSValue(value: string | number): string {
+  return typeof value === 'number' ? `${value}px` : value;
+}
 
 /**
  * Apply a theme to an element by setting CSS custom properties
@@ -33,32 +61,11 @@ export function applyTheme(
 
   if (!config) return;
 
-  if (config.bgColor) {
-    element.style.setProperty('--gh-bg-color', config.bgColor);
-  }
-  if (config.textColor) {
-    element.style.setProperty('--gh-text-default-color', config.textColor);
-  }
-  if (config.cellLevel0) {
-    element.style.setProperty('--gh-cell-level0-color', config.cellLevel0);
-  }
-  if (config.cellLevel1) {
-    element.style.setProperty('--gh-cell-level1-color', config.cellLevel1);
-  }
-  if (config.cellLevel2) {
-    element.style.setProperty('--gh-cell-level2-color', config.cellLevel2);
-  }
-  if (config.cellLevel3) {
-    element.style.setProperty('--gh-cell-level3-color', config.cellLevel3);
-  }
-  if (config.cellLevel4) {
-    element.style.setProperty('--gh-cell-level4-color', config.cellLevel4);
-  }
-  if (config.borderColor) {
-    element.style.setProperty('--gh-border-card-color', config.borderColor);
-  }
-  if (config.fontFamily) {
-    element.style.setProperty('--gh-font-default-family', config.fontFamily);
+  for (const [key, value] of Object.entries(config)) {
+    const cssKey = THEME_CSS_VARIABLES[key as keyof ThemeConfig];
+    if (cssKey && value !== undefined && value !== null && value !== '') {
+      element.style.setProperty(cssKey, normalizeCSSValue(value));
+    }
   }
 }
 
@@ -77,8 +84,8 @@ export function getThemeCSS(theme: ThemePreset | ThemeConfig): string {
 
   for (const [key, value] of Object.entries(config)) {
     const cssKey = THEME_CSS_VARIABLES[key as keyof ThemeConfig];
-    if (cssKey && value) {
-      cssVars.push(`${cssKey}: ${value};`);
+    if (cssKey && value !== undefined && value !== null && value !== '') {
+      cssVars.push(`${cssKey}: ${normalizeCSSValue(value)};`);
     }
   }
 

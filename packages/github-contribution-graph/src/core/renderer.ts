@@ -2,20 +2,122 @@ import { CONTRIBUTION_LEVELS, DAY_LABELS, REPO_URL, ROOT_CLASS } from './constan
 import type {
   ContributionMonth,
   ContributionWeek,
+  DayStyle,
+  DayRenderContext,
+  FooterRenderContext,
   GitHubUser,
+  HeaderRenderContext,
   RenderOptions,
+  ThumbnailRenderContext,
 } from './types';
+
+function mergeClasses(baseClass: string, customClass?: string): string {
+  return [baseClass, customClass].filter(Boolean).join(' ');
+}
+
+function applyCustomClass(element: HTMLElement | SVGElement, customClass?: string): void {
+  if (customClass) {
+    element.classList.add(...customClass.split(/\s+/).filter(Boolean));
+  }
+}
+
+function getDayLabels(options: RenderOptions): string[] {
+  return options.dayLabels ?? DAY_LABELS;
+}
+
+function formatTooltip(context: DayRenderContext, options: RenderOptions): string {
+  if (options.tooltipFormatter) {
+    return options.tooltipFormatter(context);
+  }
+
+  return `${context.day.contributionCount} contributions on ${context.date.toDateString()}`;
+}
+
+function normalizeInlineStyleValue(value: string | number): string {
+  return typeof value === 'number' ? `${value}px` : value;
+}
+
+function normalizeStyleProperty(property: string): string {
+  return property.startsWith('--')
+    ? property
+    : property.replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`);
+}
+
+function resolveDayClassName(context: DayRenderContext, options: RenderOptions): string | undefined {
+  if (typeof options.dayClassName === 'function') {
+    return options.dayClassName(context) || undefined;
+  }
+
+  return options.dayClassName;
+}
+
+function applyDayStyle(
+  cell: HTMLTableCellElement,
+  context: DayRenderContext,
+  options: RenderOptions
+): void {
+  const style =
+    typeof options.dayStyle === 'function' ? options.dayStyle(context) : options.dayStyle;
+
+  if (!style) return;
+
+  for (const [property, value] of Object.entries(style satisfies DayStyle)) {
+    if (value === undefined || value === null || value === '') continue;
+
+    cell.style.setProperty(normalizeStyleProperty(property), normalizeInlineStyleValue(value));
+  }
+}
+
+function applyDayAttributes(
+  cell: HTMLTableCellElement,
+  context: DayRenderContext,
+  options: RenderOptions
+): void {
+  const attributes = options.dayAttributes?.(context);
+  if (!attributes) return;
+
+  for (const [attribute, value] of Object.entries(attributes)) {
+    if (value === undefined || value === null || value === false) continue;
+    cell.setAttribute(attribute, value === true ? '' : String(value));
+  }
+}
+
+function appendDayContents(
+  cell: HTMLTableCellElement,
+  context: DayRenderContext,
+  options: RenderOptions
+): void {
+  const hasCustomRenderer = typeof options.renderDayContents === 'function';
+  const rendered = hasCustomRenderer ? options.renderDayContents?.(context) : undefined;
+
+  if (typeof rendered === 'string') {
+    cell.appendChild(document.createTextNode(rendered));
+    return;
+  }
+
+  if (rendered instanceof Node) {
+    cell.appendChild(rendered);
+    return;
+  }
+
+  if (!hasCustomRenderer && options.showTooltips !== false) {
+    const tooltip = document.createElement('span');
+    tooltip.className = mergeClasses('ghCalendarTooltip', options.classNames?.tooltip);
+    tooltip.textContent = formatTooltip(context, options);
+    cell.appendChild(tooltip);
+  }
+}
 
 /**
  * Create the base table structure for the contribution calendar
  */
-export function createTable(): {
+export function createTable(options: RenderOptions = {}): {
   table: HTMLTableElement;
   thead: HTMLTableSectionElement;
   tbody: HTMLTableSectionElement;
 } {
   const table = document.createElement('table');
-  table.className = 'ghCalendarTable';
+  table.className = mergeClasses('ghCalendarTable', options.classNames?.table);
 
   const thead = table.createTHead();
   const tbody = table.createTBody();
@@ -24,13 +126,16 @@ export function createTable(): {
   const firstCell = headerRow.insertCell();
   firstCell.style.width = '28px';
 
+  const dayLabels = getDayLabels(options);
+  const showWeekdayLabels = options.showWeekdayLabels !== false;
+
   for (let i = 0; i < 7; i++) {
     const row = tbody.insertRow();
     const cell = row.insertCell();
-    if (DAY_LABELS[i]) {
+    if (showWeekdayLabels && dayLabels[i]) {
       const label = document.createElement('span');
-      label.className = 'ghCalendarLabel';
-      label.textContent = DAY_LABELS[i];
+      label.className = mergeClasses('ghCalendarLabel', options.classNames?.dayLabel);
+      label.textContent = dayLabels[i];
       cell.appendChild(label);
     }
   }
@@ -43,16 +148,21 @@ export function createTable(): {
  */
 export function addMonths(
   thead: HTMLTableSectionElement,
-  months: ContributionMonth[]
+  months: ContributionMonth[],
+  options: RenderOptions = {}
 ): void {
+  if (options.showMonthLabels === false) return;
+
   for (let i = 0; i < months.length - 1; i++) {
     const totalWeeks = months[i].totalWeeks;
     // Bug fix: was `=>` instead of `>=`
     if (totalWeeks >= 2) {
       const cell = thead.rows[0].insertCell();
       const label = document.createElement('span');
-      label.textContent = months[i].name;
-      label.className = 'ghCalendarLabel';
+      label.textContent = options.monthLabelFormatter
+        ? options.monthLabelFormatter(months[i], i, months)
+        : months[i].name;
+      label.className = mergeClasses('ghCalendarLabel', options.classNames?.monthLabel);
       cell.appendChild(label);
       cell.colSpan = totalWeeks;
     }
@@ -64,21 +174,35 @@ export function addMonths(
  */
 export function addWeeks(
   tbody: HTMLTableSectionElement,
-  weeks: ContributionWeek[]
+  weeks: ContributionWeek[],
+  options: RenderOptions = {},
+  username = ''
 ): void {
-  for (const week of weeks) {
-    for (const day of week.contributionDays) {
-      const data = document.createElement('span');
-      // Bug fix: added `const` declaration
+  for (const [weekIndex, week] of weeks.entries()) {
+    for (const [dayIndex, day] of week.contributionDays.entries()) {
       const date = new Date(day.date);
-      data.textContent = `${day.contributionCount} contributions on ${date.toDateString()}`;
+      const context: DayRenderContext = {
+        day,
+        week,
+        weekIndex,
+        dayIndex,
+        date,
+        username,
+      };
 
       const cell = tbody.rows[day.weekday].insertCell();
-      cell.appendChild(data);
-      cell.className = 'ghCalendarDayCell';
+      cell.className = mergeClasses(
+        mergeClasses('ghCalendarDayCell', options.classNames?.dayCell),
+        resolveDayClassName(context, options)
+      );
       cell.dataset.date = day.date;
       cell.dataset.count = String(day.contributionCount);
       cell.dataset.level = day.contributionLevel;
+      cell.dataset.week = String(weekIndex);
+      cell.dataset.weekday = String(day.weekday);
+      applyDayStyle(cell, context, options);
+      applyDayAttributes(cell, context, options);
+      appendDayContents(cell, context, options);
     }
   }
 }
@@ -86,18 +210,18 @@ export function addWeeks(
 /**
  * Create the card container
  */
-export function createCard(): HTMLDivElement {
+export function createCard(options: RenderOptions = {}): HTMLDivElement {
   const card = document.createElement('div');
-  card.className = 'ghCalendarCard';
+  card.className = mergeClasses('ghCalendarCard', options.classNames?.card);
   return card;
 }
 
 /**
  * Create the canvas wrapper for table and footer
  */
-export function createCanvas(): HTMLDivElement {
+export function createCanvas(options: RenderOptions = {}): HTMLDivElement {
   const canvas = document.createElement('div');
-  canvas.className = 'ghCalendarCanvas';
+  canvas.className = mergeClasses('ghCalendarCanvas', options.classNames?.canvas);
   return canvas;
 }
 
@@ -107,21 +231,37 @@ export function createCanvas(): HTMLDivElement {
 export function createHeader(
   totalContributions: number,
   username: string,
-  avatarUrl: string
-): HTMLDivElement {
+  avatarUrl: string,
+  options: RenderOptions = {},
+  user?: GitHubUser
+): HTMLElement {
+  if (options.renderHeader && user) {
+    const customHeader = options.renderHeader({
+      user,
+      username,
+      totalContributions,
+    } satisfies HeaderRenderContext);
+
+    if (customHeader) return customHeader;
+  }
+
   const header = document.createElement('div');
-  header.className = 'ghCalendarHeader';
+  header.className = mergeClasses('ghCalendarHeader', options.classNames?.header);
 
   const total = document.createElement('span');
+  applyCustomClass(total, options.classNames?.total);
   total.textContent = `${totalContributions} contributions in the last year`;
 
   const profile = document.createElement('div');
+  applyCustomClass(profile, options.classNames?.profile);
   const link = document.createElement('a');
   link.href = `https://github.com/${encodeURIComponent(username)}`;
   link.textContent = username;
+  applyCustomClass(link, options.classNames?.profileLink);
   const img = document.createElement('img');
   img.src = avatarUrl;
   img.alt = `${username}'s avatar`;
+  applyCustomClass(img, options.classNames?.avatar);
   profile.appendChild(link);
   profile.appendChild(img);
 
@@ -134,24 +274,41 @@ export function createHeader(
 /**
  * Create the footer with contribution level legend
  */
-export function createFooter(): HTMLDivElement {
+export function createFooter(options: RenderOptions = {}): HTMLElement {
+  const labels = {
+    less: options.footerLabels?.less ?? 'Less',
+    more: options.footerLabels?.more ?? 'More',
+  };
+
+  if (options.renderFooter) {
+    const customFooter = options.renderFooter({
+      levels: CONTRIBUTION_LEVELS,
+      labels,
+    } satisfies FooterRenderContext);
+
+    if (customFooter) return customFooter;
+  }
+
   const footer = document.createElement('div');
-  footer.className = 'ghCalendarCardFooter';
+  footer.className = mergeClasses('ghCalendarCardFooter', options.classNames?.footer);
 
   const colors = document.createElement('div');
-  colors.className = 'ghCalendarCardFooterColors';
+  colors.className = mergeClasses(
+    'ghCalendarCardFooterColors',
+    options.classNames?.footerLegend
+  );
 
   const less = document.createElement('span');
-  less.textContent = 'Less';
+  less.textContent = labels.less;
 
   const more = document.createElement('span');
-  more.textContent = 'More';
+  more.textContent = labels.more;
 
   colors.appendChild(less);
 
   for (const level of CONTRIBUTION_LEVELS) {
     const cell = document.createElement('div');
-    cell.className = 'ghCalendarDayCell';
+    cell.className = mergeClasses('ghCalendarDayCell', options.classNames?.dayCell);
     cell.dataset.level = level;
     colors.appendChild(cell);
   }
@@ -165,14 +322,23 @@ export function createFooter(): HTMLDivElement {
 /**
  * Create the thumbnail/attribution link
  */
-export function createThumbnail(): HTMLDivElement {
+export function createThumbnail(options: RenderOptions = {}): HTMLElement {
+  if (options.renderThumbnail) {
+    const customThumbnail = options.renderThumbnail({
+      repoUrl: REPO_URL,
+    } satisfies ThumbnailRenderContext);
+
+    if (customThumbnail) return customThumbnail;
+  }
+
   const thumbnail = document.createElement('div');
-  thumbnail.className = 'ghThumbNail';
+  thumbnail.className = mergeClasses('ghThumbNail', options.classNames?.thumbnail);
 
   const link = document.createElement('a');
   link.href = REPO_URL;
   link.target = '_blank';
   link.rel = 'noopener noreferrer';
+  applyCustomClass(link, options.classNames?.thumbnailLink);
 
   // GitHub logo SVG
   const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
@@ -210,37 +376,44 @@ export function renderWidget(
   const { showHeader = true, showFooter = true, showThumbnail = true } = options;
 
   container.classList.add(ROOT_CLASS);
+  applyCustomClass(container, options.classNames?.root);
 
   // Clear existing content
   container.innerHTML = '';
 
   const calendar = user.contributionsCollection.contributionCalendar;
-  const { table, thead, tbody } = createTable();
+  const { table, thead, tbody } = createTable(options);
 
-  addWeeks(tbody, calendar.weeks);
-  addMonths(thead, calendar.months);
+  addWeeks(tbody, calendar.weeks, options, username);
+  addMonths(thead, calendar.months, options);
 
-  const card = createCard();
-  const canvas = createCanvas();
+  const card = createCard(options);
+  const canvas = createCanvas(options);
 
   canvas.appendChild(table);
 
   if (showFooter) {
-    const footer = createFooter();
+    const footer = createFooter(options);
     canvas.appendChild(footer);
   }
 
   card.appendChild(canvas);
 
   if (showHeader) {
-    const header = createHeader(calendar.totalContributions, username, user.avatarUrl);
+    const header = createHeader(
+      calendar.totalContributions,
+      username,
+      user.avatarUrl,
+      options,
+      user
+    );
     container.appendChild(header);
   }
 
   container.appendChild(card);
 
   if (showThumbnail) {
-    const thumbnail = createThumbnail();
+    const thumbnail = createThumbnail(options);
     container.appendChild(thumbnail);
   }
 }

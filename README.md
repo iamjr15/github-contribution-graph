@@ -110,6 +110,52 @@ Custom CSS variables can be set on the widget root:
 
 The rendered root receives the `ghContributionGraph` class, so styles work for any container, not only `#gh`.
 
+## Customization
+
+You can customize the default renderer without forking it:
+
+```tsx
+<GitHubContributionGraph
+  username="octocat"
+  theme={{
+    bgColor: '#080c10',
+    textColor: '#f4f7fb',
+    cellLevel0: '#18202a',
+    cellLevel1: '#163b2a',
+    cellLevel2: '#196c3d',
+    cellLevel3: '#32a852',
+    cellLevel4: '#7ee787',
+    cellSize: 13,
+    cellGap: 4,
+    cellRadius: 4,
+    cardRadius: 10,
+    fontFamily: 'Inter, ui-sans-serif, system-ui, sans-serif',
+  }}
+  dayLabels={['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']}
+  footerLabels={{ less: 'Quiet', more: 'Busy' }}
+  classNames={{
+    root: 'activity',
+    card: 'activity__card',
+    dayCell: 'activity__day',
+    tooltip: 'activity__tooltip',
+  }}
+  dayClassName={({ day }) =>
+    day.contributionCount >= 10 ? 'activity__day--hot' : undefined
+  }
+  dayStyle={({ day }) => ({
+    opacity: day.contributionCount === 0 ? '0.35' : '1',
+  })}
+  dayAttributes={({ day }) => ({
+    'aria-label': `${day.contributionCount} contributions on ${day.date}`,
+  })}
+  tooltipFormatter={({ day, date }) =>
+    `${day.contributionCount} contributions on ${date.toLocaleDateString()}`
+  }
+/>
+```
+
+For deeper control, the package also supports DOM render hooks for the header, footer, thumbnail, and day-cell contents. React users can pass a `render` prop to bypass the default DOM renderer and render the calendar from raw contribution data with JSX.
+
 ## API
 
 The hosted default endpoint is:

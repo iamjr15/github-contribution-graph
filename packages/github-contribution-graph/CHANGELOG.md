@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 
 ## [3.1.1] - 2026-05-04
 
+### Added
+
+- Expanded theme configuration to cover sizing, spacing, radius, borders, text colors, tooltips, header, footer, canvas, and avatar styles.
+- Added class hooks for major widget elements through `classNames`.
+- Added label, tooltip, per-day class, per-day style, per-day attribute, and day-content render hooks for the default renderer.
+- Added DOM render hooks for the header, footer, and thumbnail.
+- Added a React `render` prop for fully custom JSX rendering with the package-managed loading, error, refresh, and fetched data state.
+- Added custom loading and error fallback support for the React component.
+
 ### Fixed
 
 - Corrected package documentation to use the published `github-contrib-graph` npm name.

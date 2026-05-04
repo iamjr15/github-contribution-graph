@@ -40,6 +40,19 @@ describe('createTable', () => {
     expect(tbody.rows[0].cells[0].innerHTML).toBe('');
     expect(tbody.rows[2].cells[0].innerHTML).toBe('');
   });
+
+  it('should allow custom day labels and hiding labels', () => {
+    const { tbody } = createTable({
+      dayLabels: ['S', 'M', 'T', 'W', 'T', 'F', 'S'],
+      classNames: { dayLabel: 'custom-day-label' },
+    });
+
+    expect(tbody.rows[0].cells[0].textContent).toBe('S');
+    expect(tbody.rows[0].cells[0].querySelector('.custom-day-label')).toBeTruthy();
+
+    const hidden = createTable({ showWeekdayLabels: false });
+    expect(hidden.tbody.rows[1].cells[0].textContent).toBe('');
+  });
 });
 
 describe('addMonths', () => {
@@ -83,6 +96,26 @@ describe('addMonths', () => {
 
     // Only initial cell, Feb is last so skipped by loop
     expect(thead.rows[0].cells.length).toBe(1);
+  });
+
+  it('should allow custom month labels and hiding month labels', () => {
+    const { thead } = createTable();
+    const months: ContributionMonth[] = [
+      { name: 'January', totalWeeks: 4 },
+      { name: 'February', totalWeeks: 4 },
+    ];
+
+    addMonths(thead, months, {
+      monthLabelFormatter: (month) => month.name.slice(0, 1),
+      classNames: { monthLabel: 'custom-month-label' },
+    });
+
+    expect(thead.rows[0].cells[1].textContent).toBe('J');
+    expect(thead.rows[0].cells[1].querySelector('.custom-month-label')).toBeTruthy();
+
+    const hidden = createTable();
+    addMonths(hidden.thead, months, { showMonthLabels: false });
+    expect(hidden.thead.rows[0].cells.length).toBe(1);
   });
 });
 
@@ -141,6 +174,74 @@ describe('addWeeks', () => {
     const cell = tbody.rows[0].cells[1];
     expect(cell.querySelector('span')?.textContent).toContain('10 contributions');
   });
+
+  it('should support custom tooltip text, class names, and day contents', () => {
+    const { tbody } = createTable();
+    const weeks: ContributionWeek[] = [
+      {
+        contributionDays: [
+          {
+            date: '2024-01-15',
+            contributionCount: 10,
+            contributionLevel: 'THIRD_QUARTILE',
+            weekday: 0,
+          },
+        ],
+      },
+    ];
+
+    addWeeks(tbody, weeks, {
+      classNames: { dayCell: 'custom-cell', tooltip: 'custom-tooltip' },
+      dayClassName: ({ day }) => `level-${day.contributionLevel.toLowerCase()}`,
+      dayStyle: ({ day }) => ({
+        '--custom-count': day.contributionCount,
+        borderRadius: 7,
+      }),
+      dayAttributes: ({ day }) => ({
+        'aria-label': `${day.contributionCount} contributions`,
+        'data-custom-day': day.date,
+        hidden: false,
+      }),
+      tooltipFormatter: ({ day, username }) =>
+        `${username}: ${day.contributionCount} on ${day.date}`,
+    }, 'octocat');
+
+    const cell = tbody.rows[0].cells[1];
+    expect(cell.classList.contains('custom-cell')).toBe(true);
+    expect(cell.classList.contains('level-third_quartile')).toBe(true);
+    expect(cell.style.getPropertyValue('--custom-count')).toBe('10px');
+    expect(cell.style.borderRadius).toBe('7px');
+    expect(cell.getAttribute('aria-label')).toBe('10 contributions');
+    expect(cell.getAttribute('data-custom-day')).toBe('2024-01-15');
+    expect(cell.hasAttribute('hidden')).toBe(false);
+    expect(cell.querySelector('.custom-tooltip')?.textContent).toBe(
+      'octocat: 10 on 2024-01-15'
+    );
+
+    const custom = createTable();
+    addWeeks(custom.tbody, weeks, {
+      renderDayContents: ({ day }) => `count:${day.contributionCount}`,
+    });
+    expect(custom.tbody.rows[0].cells[1].textContent).toBe('count:10');
+  });
+
+  it('should allow disabling tooltips', () => {
+    const { tbody } = createTable();
+    addWeeks(tbody, [
+      {
+        contributionDays: [
+          {
+            date: '2024-01-15',
+            contributionCount: 10,
+            contributionLevel: 'THIRD_QUARTILE',
+            weekday: 0,
+          },
+        ],
+      },
+    ], { showTooltips: false });
+
+    expect(tbody.rows[0].cells[1].querySelector('span')).toBeNull();
+  });
 });
 
 describe('createCard', () => {
@@ -186,6 +287,18 @@ describe('createFooter', () => {
 
     expect(footer.textContent).toContain('Less');
     expect(footer.textContent).toContain('More');
+  });
+
+  it('should support custom footer labels and classes', () => {
+    const footer = createFooter({
+      footerLabels: { less: 'Quiet', more: 'Loud' },
+      classNames: { footer: 'custom-footer', footerLegend: 'custom-legend' },
+    });
+
+    expect(footer.classList.contains('custom-footer')).toBe(true);
+    expect(footer.textContent).toContain('Quiet');
+    expect(footer.textContent).toContain('Loud');
+    expect(footer.querySelector('.custom-legend')).toBeTruthy();
   });
 
   it('should create cells for all contribution levels', () => {
@@ -285,5 +398,55 @@ describe('renderWidget', () => {
     renderWidget(container, mockUser, 'testuser');
 
     expect(container.querySelector('p')).toBeNull();
+  });
+
+  it('should pass advanced render options through the default renderer', () => {
+    renderWidget(container, mockUser, 'testuser', {
+      classNames: {
+        root: 'custom-root',
+        card: 'custom-card',
+        header: 'custom-header',
+        dayCell: 'custom-day-cell',
+      },
+      footerLabels: { less: 'Low', more: 'High' },
+      tooltipFormatter: ({ day }) => `${day.date}: ${day.contributionCount}`,
+    });
+
+    expect(container.classList.contains('custom-root')).toBe(true);
+    expect(container.querySelector('.custom-card')).toBeTruthy();
+    expect(container.querySelector('.custom-header')).toBeTruthy();
+    expect(container.querySelector('.custom-day-cell')).toBeTruthy();
+    expect(container.textContent).toContain('Low');
+    expect(container.textContent).toContain('High');
+    expect(container.querySelector('.ghCalendarTooltip')?.textContent).toBe(
+      '2024-01-01: 5'
+    );
+  });
+
+  it('should use custom DOM renderers for header footer and thumbnail', () => {
+    renderWidget(container, mockUser, 'testuser', {
+      renderHeader: ({ username }) => {
+        const header = document.createElement('section');
+        header.className = 'my-header';
+        header.textContent = username;
+        return header;
+      },
+      renderFooter: ({ labels }) => {
+        const footer = document.createElement('section');
+        footer.className = 'my-footer';
+        footer.textContent = `${labels.less}/${labels.more}`;
+        return footer;
+      },
+      renderThumbnail: ({ repoUrl }) => {
+        const thumbnail = document.createElement('a');
+        thumbnail.className = 'my-thumbnail';
+        thumbnail.href = repoUrl;
+        return thumbnail;
+      },
+    });
+
+    expect(container.querySelector('.my-header')?.textContent).toBe('testuser');
+    expect(container.querySelector('.my-footer')?.textContent).toBe('Less/More');
+    expect(container.querySelector('.my-thumbnail')).toBeTruthy();
   });
 });

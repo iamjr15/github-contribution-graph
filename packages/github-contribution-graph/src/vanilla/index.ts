@@ -18,4 +18,11 @@ export type {
   ThemeConfig,
   ThemePreset,
   RenderOptions,
+  CalendarClassNames,
+  DayStyle,
+  FooterLabels,
+  DayRenderContext,
+  HeaderRenderContext,
+  FooterRenderContext,
+  ThumbnailRenderContext,
 } from '../core/types';

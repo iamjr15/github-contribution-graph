@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## [3.1.1] - 2026-05-04
+
+### Fixed
+
+- Corrected package documentation to use the published `github-contrib-graph` npm name.
+- Added a stable `ghContributionGraph` root class so styles work outside `#gh`.
+- Fixed generated theme CSS variable names from `getThemeCSS`.
+- Preserved existing query parameters when building custom API endpoint URLs.
+- Synced Cloudflare demo assets from the package build output.
+
 ## [3.0.1] - 2024-12-09
 
 ### Fixed

@@ -14,28 +14,35 @@ A lightweight, customizable widget to embed your GitHub contribution graph on an
   <a href="https://npmjs.com/package/github-contrib-graph"><strong>npm Package</strong></a>
 </p>
 
----
+> Package name: `github-contrib-graph`.
+> Repository name: `github-contribution-graph`.
+> The npm package named `github-contribution-graph` is a different package.
 
-## NPM Package
+## What Is Inside
 
-Install via npm for React or vanilla JavaScript projects:
+- `packages/github-contribution-graph`: npm package source for React, vanilla JS, and script-tag usage
+- `functions/api/ghcg/fetch-data.js`: Cloudflare Pages Function that fetches contribution data from GitHub GraphQL
+- `assets/` and `index.html`: live demo site
+- `scripts/build-cf-dist.sh`: builds the Cloudflare Pages static output and syncs demo assets from the npm package build
+
+## Install
 
 ```bash
 npm install github-contrib-graph
 ```
 
-### React
+## React
 
 ```tsx
 import { GitHubContributionGraph } from 'github-contrib-graph/react';
 import 'github-contrib-graph/styles.css';
 
-function App() {
+export function ProfileActivity() {
   return <GitHubContributionGraph username="octocat" theme="midnight" />;
 }
 ```
 
-### Vanilla JavaScript
+## Vanilla JavaScript
 
 ```js
 import { GitHubContributionWidget } from 'github-contrib-graph/vanilla';
@@ -46,295 +53,121 @@ const widget = new GitHubContributionWidget({
   container: '#my-graph',
   theme: 'void',
 });
-widget.render();
+
+await widget.render();
 ```
 
-See the [package README](packages/github-contribution-graph/README.md) for full API documentation.
-
----
-
-## Quick Start (CDN)
-
-Add the following to your HTML file to get the standard GitHub-styled graph:
+## Script Tag
 
 ```html
-<!-- 1. Include the styles -->
-<link rel="stylesheet" href="https://githubgraph.jigyansurout.com/assets/css/gh.css">
+<link rel="stylesheet" href="https://unpkg.com/github-contrib-graph@latest/dist/gh.css">
 
-<!-- 2. Create the container with your username -->
-<div id="gh" data-login="iamjr15"></div>
+<div id="gh" data-login="octocat"></div>
 
-<!-- 3. Include the script -->
-<script src="https://githubgraph.jigyansurout.com/assets/js/gh.js"></script>
+<script src="https://unpkg.com/github-contrib-graph@latest/dist/browser.global.js"></script>
 ```
 
----
-
-## 🌑 "Void" Minimalist Theme Integration
-
-To replicate the futuristic **Void Minimalist** aesthetic (Black & Monospace) shown in the demo, follow these steps.
-
-### 1. HTML Structure
-
-Wrap the graph container in the following structure to add the grid background, crosshair, and status footer.
+For production, pin a version:
 
 ```html
-<!-- Background Elements -->
-<div class="grid-bg"></div>
-<div class="crosshair"></div>
-
-<!-- Main Content -->
-<div class="main-container">
-    <h1>Activity Record</h1>
-    
-    <!-- The Graph Container -->
-    <div id="gh" data-login="YOUR_USERNAME"></div>
-
-    <!-- Status Footer -->
-    <div class="meta-info">
-        <div class="meta-item"><div class="status-dot"></div> SYSTEM ONLINE</div>
-        <div class="meta-item">ID: USER_01</div>
-        <div class="meta-item">LOC: LOCALHOST</div>
-    </div>
-</div>
+<link rel="stylesheet" href="https://unpkg.com/github-contrib-graph@3.1.1/dist/gh.css">
+<script src="https://unpkg.com/github-contrib-graph@3.1.1/dist/browser.global.js"></script>
 ```
 
-### 2. CSS Styles
+The browser bundle automatically renders an element with `id="gh"` and `data-login`.
 
-Add this CSS to your stylesheet to apply the dark theme and override the default graph colors.
+## Data Attributes
+
+| Attribute | Default | Description |
+| --- | --- | --- |
+| `data-login` | required | GitHub username to render |
+| `data-show-thumbnail` | `"true"` | Show or hide the GitHub attribution icon |
+| `data-show-header` | `"true"` | Show or hide the contribution total and avatar |
+| `data-show-footer` | `"true"` | Show or hide the Less/More legend |
+
+## Themes
+
+Built-in presets:
+
+- `default`
+- `void`
+- `slate`
+- `midnight`
+- `glacier`
+- `cyber`
+
+Custom CSS variables can be set on the widget root:
 
 ```css
-/* --- Void Theme Variables --- */
-:root {
-    --bg-color: #000000;
-    --text-primary: #ffffff;
-    --text-dim: #333333;
-    
-    /* Override Graph Variables */
-    --gh-bg-color: #000000 !important;
-    --gh-text-default-color: #ffffff !important;
-    --gh-cell-level0-color: #111111 !important;
-    --gh-border-card-color: #333333 !important;
-    --gh-font-default-family: 'SF Mono', 'Fira Code', Consolas, monospace !important;
-}
-
-/* --- Layout & Backgrounds --- */
-body {
-    background-color: var(--bg-color);
-    color: var(--text-primary);
-    font-family: 'SF Mono', 'Fira Code', Consolas, monospace;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    overflow: hidden;
-}
-
-.grid-bg {
-    position: fixed;
-    top: 0; left: 0; width: 100%; height: 100%;
-    background-image: 
-        linear-gradient(var(--text-dim) 1px, transparent 1px),
-        linear-gradient(90deg, var(--text-dim) 1px, transparent 1px);
-    background-size: 100px 100px;
-    opacity: 0.1;
-    pointer-events: none;
-    z-index: -1;
-}
-
-.crosshair {
-    position: fixed;
-    top: 50%; left: 50%;
-    transform: translate(-50%, -50%);
-    width: 20px; height: 20px;
-    pointer-events: none;
-    z-index: -1;
-}
-.crosshair::before, .crosshair::after {
-    content: ''; position: absolute; background: var(--text-dim);
-}
-.crosshair::before { top: 9px; left: 0; width: 100%; height: 2px; }
-.crosshair::after { top: 0; left: 9px; width: 2px; height: 100%; }
-
-/* --- Graph Container Styling --- */
-.main-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 4rem;
-}
-
-#gh {
-    padding: 2rem !important;
-    border: 1px solid #1a1a1a !important;
-    position: relative;
-    transition: all 0.5s ease;
-}
-
-/* Corner Brackets */
-#gh::before, #gh::after {
-    content: ''; position: absolute; width: 10px; height: 10px;
-    border: 1px solid #fff; opacity: 0.5; transition: all 0.3s ease;
-}
-#gh::before { top: -1px; left: -1px; border-right: none; border-bottom: none; }
-#gh::after { bottom: -1px; right: -1px; border-left: none; border-top: none; }
-
-#gh:hover {
-    border-color: #333 !important;
-    box-shadow: 0 0 50px rgba(255, 255, 255, 0.05);
-}
-
-/* --- Footer --- */
-.meta-info {
-    font-size: 0.7rem; color: #333; display: flex; gap: 2rem;
-}
-.status-dot {
-    width: 6px; height: 6px; background-color: #00ff00;
-    border-radius: 50%; display: inline-block; margin-right: 8px;
-    box-shadow: 0 0 10px #00ff00;
+.my-graph {
+  --gh-bg-color: #000000;
+  --gh-text-default-color: #ffffff;
+  --gh-cell-level0-color: #111111;
+  --gh-border-card-color: #333333;
+  --gh-font-default-family: ui-monospace, SFMono-Regular, Menlo, monospace;
 }
 ```
 
----
-
-## Framework Integration
-
-### React
-
-The widget modifies the DOM directly, so you must use `useEffect` to initialize it after the component mounts.
-
-```jsx
-import { useEffect } from 'react';
-
-const ContributionGraph = ({ username }) => {
-  useEffect(() => {
-    // Add CSS
-    const link = document.createElement('link');
-    link.rel = 'stylesheet';
-    link.href = 'https://githubgraph.jigyansurout.com/assets/css/gh.css';
-    document.head.appendChild(link);
-
-    // Add Script
-    const script = document.createElement('script');
-    script.src = 'https://githubgraph.jigyansurout.com/assets/js/gh.js';
-    script.async = true;
-    script.onload = () => {
-      // Render after script loads and DOM is ready
-      if (window.renderGitHubWidget) {
-        window.renderGitHubWidget();
-      }
-    };
-    document.body.appendChild(script);
-
-    return () => {
-      // Cleanup on unmount
-      document.head.removeChild(link);
-      document.body.removeChild(script);
-    };
-  }, []);
-
-  return <div id="gh" data-login={username}></div>;
-};
-
-export default ContributionGraph;
-```
-
-### Vue 3
-
-```vue
-<template>
-  <div id="gh" :data-login="username"></div>
-</template>
-
-<script setup>
-import { onMounted, onUnmounted } from 'vue';
-
-const props = defineProps({
-  username: String
-});
-
-let link, script;
-
-onMounted(() => {
-  // Add CSS
-  link = document.createElement('link');
-  link.rel = 'stylesheet';
-  link.href = 'https://githubgraph.jigyansurout.com/assets/css/gh.css';
-  document.head.appendChild(link);
-
-  // Add Script
-  script = document.createElement('script');
-  script.src = 'https://githubgraph.jigyansurout.com/assets/js/gh.js';
-  script.async = true;
-  script.onload = () => {
-    // Render after script loads and DOM is ready
-    if (window.renderGitHubWidget) {
-      window.renderGitHubWidget();
-    }
-  };
-  document.body.appendChild(script);
-});
-
-onUnmounted(() => {
-  if (link) document.head.removeChild(link);
-  if (script) document.body.removeChild(script);
-});
-</script>
-```
+The rendered root receives the `ghContributionGraph` class, so styles work for any container, not only `#gh`.
 
 ## API
 
-The widget uses a serverless API to fetch contribution data:
+The hosted default endpoint is:
 
-```
+```text
 GET https://githubgraph.jigyansurout.com/api/ghcg/fetch-data?login={username}
 ```
 
-**Response:**
-```json
-{
-  "user": {
-    "avatarUrl": "https://avatars.githubusercontent.com/...",
-    "contributionsCollection": {
-      "contributionCalendar": {
-        "totalContributions": 1234,
-        "months": [...],
-        "weeks": [...]
-      }
-    }
-  }
-}
+Use `apiEndpoint` to point the widget at your own deployment:
+
+```tsx
+<GitHubContributionGraph
+  username="octocat"
+  apiEndpoint="https://your-domain.com/api/ghcg/fetch-data"
+/>
 ```
 
----
+## Self-Hosting On Cloudflare Pages
 
-## Self-Hosting
+This repo is set up for Cloudflare Pages Functions.
 
-### Prerequisites
+1. Fork or clone the repository.
+2. Create a GitHub personal access token with enough access to read the contribution calendar you want to show.
+3. Add `GITHUB_TOKEN` to your Cloudflare Pages environment variables.
+4. Set the build command to `npm run build`.
+5. Set the output directory to `cf-dist`.
+6. Deploy with the repository root as the project root so Cloudflare can discover `functions/`.
 
-- Node.js 18+
-- GitHub Personal Access Token ([create one](https://github.com/settings/tokens) with `read:user` scope)
-- Netlify account (free tier works)
-
-### Deploy Your Own
-
-1. Fork this repository
-2. Connect to [Netlify](https://app.netlify.com)
-3. Add environment variable: `GITHUB_TOKEN` = your PAT
-4. Deploy
-
-### Local Development
+Local development:
 
 ```bash
 npm install
 echo "GITHUB_TOKEN=your_token" > .env
-netlify dev
+npm run build
+npm run dev
 ```
 
-Open http://localhost:8888
+## Package Development
 
----
+```bash
+npm install
+npm run test -w packages/github-contribution-graph
+npm run typecheck -w packages/github-contribution-graph
+npm run build
+```
+
+`npm run build` builds the npm package and then copies `dist/browser.global.js` and `dist/gh.css` into the live demo assets before creating `cf-dist`.
+
+## Troubleshooting
+
+- Install `github-contrib-graph`, not `github-contribution-graph`.
+- For script-tag usage, place the script after the graph container or call `window.renderGitHubWidget()` after adding the container.
+- Make sure `data-login` or `username` is a valid GitHub username.
+- If you self-host, confirm your function returns `{ "user": ... }` and sends CORS headers.
+- If private contributions are missing, check the permissions and visibility available to your GitHub token.
+
+See the [package README](packages/github-contribution-graph/README.md) for the full API reference.
 
 ## License
 
-Apache 2.0
+Apache-2.0

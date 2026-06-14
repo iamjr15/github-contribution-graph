@@ -23,7 +23,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '24'
           cache: 'npm'
           registry-url: 'https://registry.npmjs.org'
 
@@ -36,10 +36,11 @@ jobs:
       - name: Build
         run: npm run build
 
+      # OIDC trusted publishing: no NODE_AUTH_TOKEN env (a static token would
+      # preempt OIDC). id-token: write + npm >= 11.5.1 (Node 24) mint a
+      # short-lived credential. Provenance is automatic; --provenance explicit.
       - name: Publish to npm
         run: npm publish -w packages/github-contribution-graph --provenance --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
